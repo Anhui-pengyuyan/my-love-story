@@ -1,0 +1,750 @@
+/* ==========================================
+   1. 基础重置与全局变量（维持Apple极简风）
+   ========================================== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    -webkit-font-smoothing: antialiased;
+    -webkit-tap-highlight-color: transparent;
+}
+
+body {
+    background-color: #000000;
+    color: #ffffff;
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Helvetica Neue", sans-serif;
+    overflow: hidden;
+}
+
+/* ==========================================
+   2. 全屏纯净滚动容器（适配 iOS 底部工具栏）
+   ========================================== */
+.scroll-container {
+    width: 100vw;
+    height: 100vh;
+    height: 100dvh; 
+    overflow-y: scroll;
+    scroll-snap-type: y mandatory;
+    scroll-behavior: smooth;
+    -webkit-overflow-scrolling: touch;
+}
+
+.page {
+    width: 100vw;
+    height: 100vh;
+    height: 100dvh;
+    scroll-snap-align: start;
+    scroll-snap-stop: always;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 30px 24px;
+    position: relative;
+}
+
+/* ==========================================
+   3. 核心：电影感字字幕“一行行蹦出来”的打字机动画
+   ========================================== */
+.content {
+    max-width: 500px;
+    width: 100%;
+    text-align: center;
+    opacity: 0;
+    transform: translateY(20px);
+    transition: opacity 0.5s ease;
+}
+
+/* 当页面被滑到眼前（active）时，里面的每一行文字开始跑动画 */
+.page.active .content {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.page.active .story-text p,
+.page.active .main-title,
+.page.active .quote,
+.page.active .subtitle,
+.page.active .chapter,
+.page.active .date {
+    animation: fadeInWords 1.0s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+    opacity: 0;
+}
+
+/* 错开每行字的出现时间，像看电影字幕一样叙事 */
+.page.active .subtitle { animation-delay: 0.2s; }
+.page.active .main-title { animation-delay: 0.8s; }
+.page.active .quote { animation-delay: 1.8s; }
+
+.page.active .chapter { animation-delay: 0.2s; }
+.page.active .date { animation-delay: 0.5s; }
+.page.active .story-text p:nth-child(1) { animation-delay: 1.0s; }
+.page.active .story-text p:nth-child(2) { animation-delay: 2.2s; }
+.page.active .story-text p:nth-child(3) { animation-delay: 3.4s; }
+.page.active .story-text p:nth-child(4) { animation-delay: 4.6s; }
+.page.active .story-text p:nth-child(5) { animation-delay: 5.8s; }
+.page.active .story-text p:nth-child(6) { animation-delay: 7.0s; }
+.page.active .story-text p:nth-child(7) { animation-delay: 8.2s; }
+.page.active .story-text p:nth-child(8) { animation-delay: 9.4s; }
+/* 特别强调的金句最后单独亮起 */
+.page.active .story-text .highlight { animation-delay: 3.0s; } 
+
+@keyframes fadeInWords {
+    from { opacity: 0; transform: translateY(12px); filter: blur(4px); }
+    to { opacity: 1; transform: translateY(0); filter: blur(0); }
+}
+
+/* ==========================================
+   4. 基础文本样式
+   ========================================== */
+.subtitle {
+    font-size: 16px;
+    color: #86868b;
+    margin-bottom: 12px;
+    letter-spacing: 1px;
+}
+
+.main-title {
+    font-size: 24px;
+    font-weight: 600;
+    line-height: 1.5;
+    margin-bottom: 24px;
+    letter-spacing: -0.5px;
+}
+
+.quote {
+    font-size: 15px;
+    color: #a1a1a6;
+    line-height: 1.6;
+    font-style: italic;
+}
+
+.chapter {
+    display: block;
+    font-size: 14px;
+    color: #ff3b30;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    margin-bottom: 8px;
+}
+
+.date {
+    display: block;
+    font-size: 13px;
+    color: #86868b;
+    margin-bottom: 30px;
+}
+
+.story-text p {
+    font-size: 16px;
+    color: #e8e8ed;
+    line-height: 2;
+    margin-bottom: 12px;
+}
+
+.story-text .highlight {
+    color: #ffffff;
+    font-weight: 500;
+    display: block;
+}
+
+/* ==========================================
+   5. 互动元素（西高地小狗与彩蛋）
+   ========================================== */
+.avatar-container {
+    position: relative;
+    width: 130px;
+    height: 130px;
+    margin: 0 auto 30px auto;
+}
+
+.westie-img {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 2px solid rgba(255, 255, 255, 0.2);
+    cursor: pointer;
+    transition: transform 0.2s;
+}
+
+.westie-img:active {
+    transform: scale(0.92);
+}
+
+.secret-bubble {
+    position: absolute;
+    bottom: -40px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(255, 255, 255, 0.12);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    padding: 6px 14px;
+    border-radius: 16px;
+    font-size: 13px;
+    white-space: nowrap;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+    pointer-events: none;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.secret-bubble.show {
+    opacity: 1;
+}
+
+.next-btn {
+    margin-top: 40px;
+    background-color: #ffffff;
+    color: #000000;
+    border: none;
+    padding: 12px 28px;
+    border-radius: 22px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.3s, transform 0.2s;
+}
+.next-btn:active {
+    transform: scale(0.97);
+    background-color: #e8e8ed;
+}
+
+/* ==========================================
+   6. 视觉提升：精致的“iPhone黑边”聊天截图容器
+   ========================================== */
+.chat-page {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.chat-img-wrapper {
+    width: 80%;
+    max-height: 48dvh;
+    overflow-y: auto; /* 如果截图长，允许在模拟手机里局部滚动 */
+    border-radius: 24px; /* 更圆润的手机角 */
+    border: 4px solid #1c1c1e; /* 模拟手机黑边 */
+    box-shadow: 0 20px 40px rgba(255, 255, 255, 0.05), 
+                0 0 0 1px rgba(255, 255, 255, 0.1); /* 极其精致的微光边框 */
+    margin-bottom: 24px;
+    background: #121212;
+}
+
+.chat-img {
+    width: 100%;
+    display: block;
+}
+
+.chat-desc p {
+    font-size: 15px;
+    color: #a1a1a6;
+    line-height: 1.6;
+}
+
+/* ==========================================
+   7. 其他特殊页面样式与结尾
+   ========================================== */
+.font-large p {
+    font-size: 18px !important;
+}
+.keywords {
+    margin-top: 24px;
+}
+.keywords span {
+    font-size: 13px;
+    color: #86868b;
+    margin: 0 8px;
+    background: rgba(255, 255, 255, 0.08);
+    padding: 4px 10px;
+    border-radius: 12px;
+}
+
+.tbc {
+    font-size: 28px;
+    font-weight: 300;
+    letter-spacing: 3px;
+    margin-bottom: 16px;
+    background: linear-gradient(180deg, #fff 0%, #86868b 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+.footer-text {
+    font-size: 14px;
+    color: #6e6e73;
+}
+
+/* ==========================================
+   8. 悬浮音乐按钮 & 屏幕落心特效
+   ========================================== */
+.music-control {
+    position: fixed;
+    top: 24px;
+    right: 24px;
+    z-index: 999;
+    width: 38px;
+    height: 38px;
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.heart {
+    position: fixed;
+    z-index: 9999;
+    pointer-events: none;
+    font-size: 22px;
+    will-change: transform, opacity;
+    animation: floatUp 1.2s cubic-bezier(0.1, 0.8, 0.3, 1) forwards;
+}
+
+@keyframes floatUp {
+    0% {
+        transform: translateY(0) scale(0.8) rotate(0deg);
+        opacity: 1;
+    }
+    100% {
+        transform: translateY(-120px) scale(1.4) rotate(15deg);
+        opacity: 0;
+    }
+}
+
+/* ==========================================
+   9. 防呆设计：屏幕底部轻微跳动的下滑提示小箭头
+   ========================================== */
+.scroll-arrow {
+    position: absolute;
+    bottom: 25px;
+    left: 50%;
+    transform: translateX(-50%);
+    opacity: 0.25;
+    font-size: 16px;
+    animation: bounce 2s infinite;
+    pointer-events: none; /* 防止挡住点击 */
+}
+
+@keyframes bounce {
+    0%, 20%, 50%, 80%, 100% { transform: translate(-50%, 0); }
+    40% { transform: translate(-50%, -8px); }
+    60% { transform: translate(-50%, -4px); }
+}
+/* --- 方案二：错落相片墙样式 --- */
+.photo-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); /* 两列布局 */
+    gap: 12px;
+    width: 85%;
+    margin: 20px auto;
+}
+
+.grid-item {
+    background: #ffffff; /* 拍立得白色底边 */
+    padding: 6px 6px 18px 6px; /* 留出底部放拍立得的感觉 */
+    box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+    border-radius: 4px;
+    transition: transform 0.3s;
+}
+
+.grid-item img {
+    width: 100%;
+    aspect-ratio: 1 / 1; /* 强制图片变成正方形 */
+    object-fit: cover;
+}
+
+/* 让照片微微倾斜，显得随性浪漫，不会呆板 */
+.item-1 { transform: rotate(-3deg); }
+.item-2 { transform: rotate(2deg); margin-top: 10px; }
+.item-3 { transform: rotate(1deg); }
+.item-4 { transform: rotate(-2deg); margin-top: -10px; }
+
+/* ==========================================
+   方案：双图并排“电影双镜头”样式
+   ========================================== */
+.dual-photo-page {
+    max-width: 480px !important;
+}
+
+.dual-photo-container {
+    display: flex;
+    justify-content: center;
+    gap: 12px; /* 两张图之间的间距 */
+    width: 95%;
+    margin: 18px auto;
+}
+
+.mini-chat-wrapper {
+    flex: 1; /* 两张图平分宽度，保证宽度一模一样 */
+    height: 180px; /* 🔴 关键：强制写死一个高度！这样两张图的高度就绝对一样了 */
+    overflow: hidden;
+    border-radius: 14px; 
+    border: 3px solid #1c1c1e; 
+    box-shadow: 0 10px 25px rgba(255, 255, 255, 0.03);
+    background: #121212;
+}
+
+.mini-chat-wrapper img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* 🔴 关键：自动居中裁剪！多出来的部分隐藏，保证图片绝不拉伸变形 */
+    object-position: center; /* 🔴 关键：确保图片是从正中间开始裁剪的 */
+    display: block;
+}
+/* ==========================================
+   方案：三图水平并排（电影分镜头样式）
+   ========================================== */
+.triple-photo-container {
+    display: flex;
+    justify-content: center;
+    gap: 8px;          /* 三张图之间的间距 */
+    width: 95%;        /* 整体宽度不超过屏幕 */
+    margin: 12px auto;  /* 上下留出适当距离 */
+}
+
+.micro-photo-wrapper {
+    flex: 1;           /* 🔴 最核心：三张图必须严格平分屏幕宽度，绝对不会撑爆 */
+    text-align: center;
+}
+
+.micro-photo-wrapper img {
+    width: 100% !important;
+    height: 110px !important;     /* 🔴 写死一个较矮的高度，给文字留足空间 */
+    object-fit: cover !important; /* 自动居中裁剪，哪怕截图比例不一样也绝对不变形 */
+    object-position: center !important;
+    border-radius: 8px;           /* 轻微圆角 */
+    border: 2px solid #1c1c1e;    /* 精致的暗黑边框 */
+}
+
+/* 照片下方的小标签字体样式 */
+.photo-tag {
+    display: block;
+    font-size: 11px;
+    color: #8e8e93;
+    margin-top: 4px;
+}
+
+/* ==========================================
+   方案：微缩九宫格相片墙样式（3×3 完美同屏）
+   ========================================== */
+.grid-photo-page {
+    max-width: 460px !important; /* 限制整体宽度，在手机上两边留白更精致 */
+}
+
+.jiugongge-container {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); /* 严格做成 3 列 */
+    grid-template-rows: repeat(3, 1fr);    /* 严格做成 3 行 */
+    gap: 6px;                             /* 每张小图之间的精致缝隙 */
+    width: 85%;                           /* 宽度适中 */
+    margin: 12px auto;                     /* 上下间距 */
+}
+
+.grid-photo-item {
+    width: 100%;
+    aspect-ratio: 1 / 1;                  /* 🔴 灵魂锁死：强制让格子变成绝对的正方形 */
+    overflow: hidden;
+    border-radius: 6px;                   /* 极其轻微的圆角，很有现代感 */
+    background: #121212;
+    border: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.grid-photo-item img {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;         /* 🔴 核心裁剪魔法：无论原图长宽如何，自动裁切成正方形塞满格子，绝不拉伸变形！ */
+    object-position: center !important;   /* 居中对齐照片中心 */
+    display: block;
+}
+
+/* ==========================================
+   方案：四宫格照片墙样式（2×2 完美同屏）
+   ========================================== */
+.quad-photo-page {
+    max-width: 460px !important;
+}
+
+.quad-photo-container {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr); /* 严格做成 2 列 */
+    gap: 8px;                             /* 每张图之间的精致缝隙 */
+    width: 80%;                           /* 宽度适中，两边留白更秀气 */
+    margin: 12px auto;                    /* 上下间距 */
+}
+
+.quad-photo-item {
+    width: 100%;
+    height: 100px;                        /* 🔴 灵魂锁死：强制让每张小图高度只有 100 像素，留出足够空间给文字 */
+    overflow: hidden;
+    border-radius: 8px;                   /* 圆角 */
+    background: #121212;
+    border: 2px solid #1c1c1e;            /* 精致暗黑边框 */
+}
+
+.quad-photo-item img {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;         /* 🔴 核心魔法：无视原图比例，自动居中裁切填满，绝不拉伸变形 */
+    object-position: center !important;
+    display: block;
+}
+
+/* ==========================================
+   方案：最终章 12宫格微型相片墙（高光流）
+   ========================================== */
+.final-mosaic-page {
+    max-width: 460px !important;
+}
+
+.mosaic-grid-container {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr); /* 严格做成 4 列 */
+    grid-template-rows: repeat(3, 1fr);    /* 严格做成 3 行，共12格 */
+    gap: 4px;                             /* 极细的精美像素缝隙 */
+    width: 85%;                           /* 居中保持秀气 */
+    margin: 10px auto;
+}
+
+.mosaic-item {
+    width: 100%;
+    aspect-ratio: 1 / 1;                  /* 锁死正方形 */
+    overflow: hidden;
+    border-radius: 4px;                   /* 极其微小的圆角 */
+    background: #121212;
+    border: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.mosaic-item img {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;         /* 智能居中裁剪魔法 */
+    object-position: center !important;
+    display: block;
+    filter: grayscale(20%);               /* 🔴 艺术彩蛋：轻微去色，让谢幕碎片有一种电影胶片的回忆感 */
+    transition: filter 0.3s;
+}
+
+/* 鼠标点上去或者手指摸上去时，照片会恢复鲜艳，增加互动小惊喜 */
+.mosaic-item img:active, .mosaic-item img:hover {
+    filter: grayscale(0%);
+}
+
+/* 调整排比句的紧凑度，防止字多撑出屏幕 */
+.bullet-list-text p {
+    font-size: 12px !important;
+    color: #a2a2a7 !important;
+    margin: 3px 0 !important;
+    letter-spacing: 0.5px;
+    text-align: center;
+}
+
+/* ==========================================
+   方案：纯文字后记（深邃、柔和、电影独白质感）
+   ========================================== */
+.epilogue-page {
+    max-width: 440px !important;
+    padding: 0 25px !important;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+/* 让前半段文字带有淡淡的灰色，像在耳边呢喃 */
+.epilogue-text p {
+    font-size: 13px !important;
+    color: #a2a2a7 !important;
+    line-height: 1.8 !important;
+    margin: 6px 0 !important;
+}
+
+/* 强调语气的软高亮 */
+.highlight-soft {
+    color: #e5e5ea !important;
+    font-weight: 500;
+    margin-top: 12px !important;
+}
+
+/* 情感呼应大框 */
+.dynamic-echo-text {
+    margin-top: 20px;
+}
+
+.dynamic-echo-text p {
+    font-size: 13px !important;
+    line-height: 1.7 !important;
+    color: #d1d1d6 !important;
+}
+
+/* 对方的三句排比，用略带温柔的暗白，稍微缩进，像诗歌一样 */
+.echo-box {
+    margin: 15px 0;
+    padding-left: 8px;
+    border-left: 2px solid #3a3a3c; /* 左侧一根内敛的细线 */
+}
+
+.echo-box p {
+    font-size: 12.5px !important;
+    color: #bfbfc4 !important;
+    margin: 8px 0 !important;
+    font-style: italic; /* 略带倾斜，更有信件感 */
+}
+
+/* “而我是那个...” 这一句稍微亮一点，拉开层次 */
+.my-answer {
+    color: #ffffff !important;
+    font-size: 13px !important;
+    margin-top: 12px !important;
+}
+
+/* 最后一句话，放大，居中，用渐变微光 */
+.final-sentence {
+    font-size: 15px !important;
+    font-weight: 600;
+    text-align: center;
+    letter-spacing: 1.5px;
+    color: #ffffff;
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.3); /* 淡淡的荧光效果 */
+    margin-top: 10px;
+}
+
+/* 结尾的小红心，静止或轻微呼吸 */
+.final-heart {
+    color: #ff3b30 !important;
+    font-size: 14px !important;
+    animation: heartBeat 2.5s infinite ease-in-out;
+}
+
+@keyframes heartBeat {
+    0%, 100% { opacity: 0.3; transform: scale(1); }
+    50% { opacity: 0.8; transform: scale(1.1); }
+}
+
+/* ==========================================
+   方案：终极生日彩蛋页（暗夜微光与动态蜡烛）
+   ========================================== */
+.birthday-theme-bg {
+    background: radial-gradient(circle at center, #1c1c1e 0%, #000000 100%) !important; /* 深邃的中心微光夜空 */
+}
+
+.birthday-page {
+    max-width: 440px !important;
+    padding: 0 30px !important;
+    text-align: center;
+}
+
+.birthday-title {
+    display: block;
+    font-size: 11px;
+    letter-spacing: 6px;
+    color: #ff3b30; /* 经典的浪漫正红 */
+    font-weight: 600;
+    margin-bottom: 25px;
+    opacity: 0.8;
+}
+
+/* 🕯️ 纯代码动态蜡烛创意组件 */
+.cake-candle-area {
+    position: relative;
+    width: 60px;
+    height: 90px;
+    margin: 0 auto 25px auto;
+}
+
+.candle {
+    position: absolute;
+    left: 50%;
+    bottom: 0;
+    width: 16px;
+    height: 50px;
+    background: linear-gradient(to right, #ff9500, #ffcc00);
+    border-radius: 4px;
+    transform: translateX(-50%);
+}
+
+/* 烛火跳动特效 */
+.flame {
+    position: absolute;
+    left: 50%;
+    top: -18px;
+    width: 14px;
+    height: 22px;
+    background: #ff3b30;
+    border-radius: 50% 50% 20% 20% / 60% 60% 40% 40%;
+    transform: translateX(-50%);
+    animation: flicker 1.2s infinite ease-in-out;
+    background: linear-gradient(to bottom, #ffcc00 0%, #ff3b30 100%);
+    box-shadow: 0 0 15px rgba(255, 149, 0, 0.8);
+}
+
+@keyframes flicker {
+    0%, 100% { transform: translateX(-50%) scale(1); opacity: 0.9; }
+    50% { transform: translateX(-48%) scale(1.08) skewX(3deg); opacity: 1; }
+}
+
+.candle-text {
+    position: absolute;
+    width: 100%;
+    bottom: -22px;
+    font-size: 11px;
+    color: #8e8e93;
+    letter-spacing: 1.5px;
+}
+
+/* 生日情书信笺感 */
+.birthday-letter p {
+    font-size: 13.5px !important;
+    line-height: 1.8 !important;
+    color: #d1d1d6 !important;
+    text-align: left;
+    margin: 10px 0 !important;
+}
+
+.letter-salutation {
+    font-size: 15px !important;
+    font-weight: 600;
+    color: #ffffff !important;
+    margin-bottom: 15px !important;
+}
+
+.letter-highlight {
+    color: #ffcc00 !important; /* 温暖的金黄色，突出余生誓言 */
+    font-weight: 500;
+    border-bottom: 1px dashed rgba(255, 204, 0, 0.4);
+    padding-bottom: 4px;
+    display: inline-block;
+}
+
+/* 底部终极高亮表白 */
+.final-confession {
+    margin-top: 35px;
+    animation: fadeInGlow 3s ease-in-out forwards;
+}
+
+.love-you {
+    font-size: 18px !important;
+    font-weight: 600;
+    color: #ffffff !important;
+    letter-spacing: 4px;
+    margin-bottom: 5px !important;
+}
+
+.queen {
+    font-size: 14px !important;
+    color: #a2a2a7 !important;
+    letter-spacing: 1.5px;
+    margin-bottom: 15px !important;
+}
+
+.hbd-wish {
+    font-size: 22px !important;
+    font-weight: 700;
+    color: #ff3b30 !important;
+    letter-spacing: 3px;
+    text-shadow: 0 0 15px rgba(255, 59, 48, 0.4);
+}
+
