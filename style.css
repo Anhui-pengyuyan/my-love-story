@@ -497,3 +497,48 @@ body {
 .content > *:nth-child(4) { transition-delay: 0.55s; }
 .content > *:nth-child(5) { transition-delay: 0.7s; }
 .content > *:nth-child(6) { transition-delay: 0.85s; }
+
+/* ==========================================
+   单独修复 Safari 移动端图片重叠补丁（追加到最底部即可）
+   ========================================== */
+
+/* 1. 修复弹性容器在 Safari 下强行挤压内容的问题 */
+.page {
+    flex-direction: column !important;
+    overflow-y: auto !important;
+    -webkit-overflow-scrolling: touch !important;
+}
+
+/* 2. 确保内容未超出时完美居中，超出时防变形 */
+.page .content {
+    margin: auto 0 !important;
+    flex-shrink: 0 !important;
+}
+
+/* 3. 重新规范图片容器，防止 Safari 动态加载时高度塌陷 */
+.chat-img-wrapper {
+    max-width: 320px !important;
+    max-height: 38dvh !important;
+    overflow: hidden !important;
+    background: #121212 !important;
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    margin: 12px auto !important;
+}
+
+/* 4. 强制图片自适应高度，不拉伸不压扁 */
+.chat-img {
+    width: 100% !important;
+    height: auto !important;
+    display: block !important;
+    object-fit: contain !important;
+}
+
+/* 5. 降低动画位移并开启 Safari 独立硬件加速复合层，防止文本层级紊乱 */
+.content > * {
+    transform: translateY(10px);
+    will-change: transform, opacity !important;
+    backface-visibility: hidden !important;
+    -webkit-backface-visibility: hidden !important;
+}
