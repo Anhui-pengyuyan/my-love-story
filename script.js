@@ -1,589 +1,288 @@
-/**
- * ============================================================================
- * HIGH-PERFORMANCE INTERACTIVE ENGINE (ENTERPRISE EDITION)
- * Core Design Architecture: Modular, Object-Pooled, Hardware-Accelerated
- * Target Devices: iOS Safari & High-Refresh Rate Displays (e.g., iPhone 16 Pro Max)
- * ============================================================================
- */
-
-"use strict";
-
-/**
- * 全局业务与性能常量配置空间
- */
-const CONFIG = {
-    PASSWORD_KEY: "0719",
-    TIMING: {
-        OVERLAY_REMOVE_MS: 500,
-        BUBBLE_SHOW_MS: 2500,
-        PARTICLE_DESTROY_MS: 1400,
-        CONFESSION_DELAY_MS: 600,
-        FIREWORK_DURATION_MS: 12000,
-        FIREWORK_LOOP_INTERVAL_MS: 1200,
-        FIREWORK_LOOP_MAX: 5
-    },
-    OBSERVER: {
-        THRESHOLD: 0.2,
-        ROOT_MARGIN: "0px 0px -10% 0px",
-        STAGGER_DELAY_SEC: 0.15
-    },
-    PARTICLES: {
-        CLICK_SPAWN_COUNT: 6,
-        POOL_MAX_SIZE: 30,
-        EMOJI_SET: ["❤️", "🌸", "✨"]
-    },
-    FIREWORKS: {
-        PARTICLE_COUNT: 85,
-        CORE_BRIGHT_COUNT: 15,
-        COLORS: ['#ffffff', '#ffb6c1', '#dda0dd', '#ffd700', '#ff4d4d', '#ff69b4'],
-        CORE_COLOR: '#ffffff',
-        FRICTION: 0.96,
-        GRAVITY: 0.11,
-        MIN_DECAY: 0.006,
-        MAX_DECAY: 0.008
-    }
-};
-
-/**
- * 核心微循环状态机
- */
-const AppState = {
-    isManuallyPaused: false,
-    isPageVisible: true,
-    modules: {}
-};
-
-// ==========================================
-// MAIN INITIALIZATION ARCHITECTURE
-// ==========================================
 document.addEventListener("DOMContentLoaded", () => {
-    init();
-});
+    const container = document.querySelector(".scroll-container");
+    const pages = document.querySelectorAll(".page");
+    const musicBtn = document.getElementById("musicBtn");
+    const audio = document.getElementById("bgMusic");
+    const westie = document.getElementById("westieDog");
+    const bubble = document.getElementById("bubble");
+    
+    // 密码层验证
+    const overlay = document.getElementById("passwordOverlay");
+    const pwdInput = document.getElementById("pwdInput");
+    const pwdBtn = document.getElementById("pwdBtn");
 
-/**
- * 统一主初始化调度器
- */
-function init() {
-    // 实例化核心基础模块
-    AppState.modules.utilities = new UtilitiesModule();
-    AppState.modules.music = new MusicModule();
-    AppState.modules.password = new PasswordModule(AppState.modules.music);
-    AppState.modules.observer = new ObserverModule();
-    AppState.modules.particles = new ClickParticlesModule();
-    AppState.modules.birthday = new BirthdayModule();
-    AppState.modules.fireworks = new FireworkEngine();
-
-    // 建立全局系统级事件
-    initSystemEvents();
-}
-
-/**
- * 全局系统环境（如切后台、失焦挂起）监听
- */
-function initSystemEvents() {
-    document.addEventListener("visibilitychange", () => {
-        const isVisible = document.visibilityState === "visible";
-        AppState.isPageVisible = isVisible;
-
-        if (!isVisible) {
-            // 切后台：全面冻结开销，降温省电
-            AppState.modules.music.suspend();
-            AppState.modules.fireworks.suspend();
-        } else {
-            // 切回前台：平滑恢复
-            AppState.modules.music.resume();
-            AppState.modules.fireworks.resume();
-        }
-    }, { passive: true });
-}
-
-// ==========================================
-// MODULE 1: PASSWORD AUTHENTICATION
-// ==========================================
-class PasswordModule {
-    constructor(musicModule) {
-        this.musicModule = musicModule;
-        this.overlay = document.getElementById("passwordOverlay");
-        this.pwdInput = document.getElementById("pwdInput");
-        this.pwdBtn = document.getElementById("pwdBtn");
-
-        if (this.overlay) {
-            this.bindEvents();
-        }
+    if (pwdBtn) pwdBtn.addEventListener("click", checkPassword);
+    if (pwdInput) {
+        pwdInput.addEventListener("keypress", (e) => { if(e.key === "Enter") checkPassword(); });
     }
 
-    bindEvents() {
-        if (this.pwdBtn) {
-            this.pwdBtn.addEventListener("click", () => this.validatePassword(), { passive: true });
-        }
-        if (this.pwdInput) {
-            this.pwdInput.addEventListener("keypress", (e) => {
-                if (e.key === "Enter") this.validatePassword();
-            }, { passive: true });
-        }
-    }
-
-    validatePassword() {
-        if (this.pwdInput.value === CONFIG.PASSWORD_KEY) {
-            this.unlockWebsite();
+    function checkPassword() {
+        if (pwdInput.value === "0719") {
+            overlay.style.opacity = "0";
+            setTimeout(() => overlay.remove(), 500);
+            // 尝试自动播放音乐
+            audio.play().catch(() => {});
         } else {
             alert("密码错误，这是专属空间哦~");
-            this.pwdInput.value = "";
+            pwdInput.value = "";
         }
     }
 
-    unlockWebsite() {
-        this.hideOverlay();
-        // 解锁后尝试立即激活动态音频
-        this.musicModule.play();
-    }
-
-    hideOverlay() {
-        this.overlay.style.opacity = "0";
-        setTimeout(() => {
-            this.overlay.remove();
-        }, CONFIG.TIMING.OVERLAY_REMOVE_MS);
-    }
-}
-
-// ==========================================
-// MODULE 2: REFINED MUSIC CONTROLLER
-// ==========================================
-class MusicModule {
-    constructor() {
-        this.musicBtn = document.getElementById("musicBtn");
-        this.audio = document.getElementById("bgMusic");
-
-        if (this.audio && this.musicBtn) {
-            this.bindEvents();
+    // 页面滚动导航
+    window.scrollToNext = function() {
+        if (pages[1]) {
+            pages[1].scrollIntoView({ behavior: "smooth" });
         }
-    }
+    };
 
-    bindEvents() {
-        this.musicBtn.addEventListener("click", (e) => {
-            e.stopPropagation();
-            this.toggle();
-        }, { passive: true });
+    // 极其平滑的动态淡入核心：逐行有序浮现
+    const observerOptions = {
+        root: null,
+        threshold: 0.2, // 哪怕长页面只露出一部分，也能提前准备好动画
+        rootMargin: "0px 0px -10% 0px"
+    };
 
-        // 针对 iOS Safari 优化：首次触摸解锁全局 AudioContext
-        document.addEventListener("touchstart", () => {
-            const overlay = document.getElementById("passwordOverlay");
-            // 只有当密码框不存在（即已验证通过）且未被手动暂停时，才允许自动续播
-            if (this.audio.paused && !AppState.isManuallyPaused && !overlay) {
-                this.play();
+    const observer = new IntersectionObserver((entries) => {
+        entries.forEach(entry => {
+            if (entry.isIntersecting) {
+                const content = entry.target.querySelector(".content");
+                if (content && !content.classList.contains("visible")) {
+                    content.classList.add("visible");
+                    
+                    // 内部元素流式延迟出场
+                    const children = content.querySelectorAll('.chapter, .date, .subtitle, .main-title, .quote, .story-text p, .chat-img-wrapper, .dual-photo-container, .triple-photo-container, .jiugongge-container, .quad-photo-container, .mosaic-grid-container, .bullet-list-text p, .echo-box, .final-sentence, .cake-candle-area, .final-confession');
+                    children.forEach((child, index) => {
+                        child.style.setProperty('--delay-index', index);
+                        child.classList.add('fade-in-up');
+                    });
+                }
             }
-        }, { once: true, passive: true });
-    }
+        });
+    }, observerOptions);
 
-    play() {
-        if (this.audio && this.audio.paused) {
-            this.audio.play()
-                .then(() => this.updateButton(false))
-                .catch(() => { /* 捕获 Safari 自动播放拦截机制 */ });
-        }
-    }
+    pages.forEach(page => observer.observe(page));
 
-    pause() {
-        if (this.audio && !this.audio.paused) {
-            this.audio.pause();
-            this.updateButton(true);
-        }
-    }
-
-    toggle() {
-        if (this.audio.paused) {
-            AppState.isManuallyPaused = false;
-            this.play();
-        } else {
-            AppState.isManuallyPaused = true;
-            this.pause();
-        }
-    }
-
-    suspend() {
-        // 因切后台导致的系统级挂起（不破坏用户的自主暂停意愿状态）
-        if (this.audio && !this.audio.paused) {
-            this.audio.pause();
-            this.updateButton(true);
-        }
-    }
-
-    resume() {
-        // 从后台切回，若用户没有手动暂停且当前处于激活视窗，则恢复播放
-        if (AppState.isPageVisible && !AppState.isManuallyPaused) {
-            this.play();
-        }
-    }
-
-    updateButton(isPaused) {
-        if (isPaused) {
-            this.musicBtn.innerText = "🔇";
-            this.musicBtn.classList.add("paused");
-        } else {
-            this.musicBtn.innerText = "🎵";
-            this.musicBtn.classList.remove("paused");
-        }
-    }
-}
-
-// ==========================================
-// MODULE 3: INTERSECTION OBSERVER PIPELINE
-// ==========================================
-class ObserverModule {
-    constructor() {
-        this.pages = document.querySelectorAll(".page");
-        if (this.pages.length > 0) {
-            this.initObserver();
-        }
-    }
-
-    initObserver() {
-        const options = {
-            root: null,
-            threshold: CONFIG.OBSERVER.THRESHOLD,
-            rootMargin: CONFIG.OBSERVER.ROOT_MARGIN
-        };
-
-        this.observer = new IntersectionObserver((entries) => {
-            entries.forEach(entry => this.handleIntersection(entry));
-        }, options);
-
-        this.pages.forEach(page => this.observer.observe(page));
-    }
-
-    handleIntersection(entry) {
-        if (!entry.isIntersecting) return;
-
-        const content = entry.target.querySelector(".content");
-        if (content && !content.classList.contains("visible")) {
-            content.classList.add("visible");
-            this.staggerChildren(content);
-        }
-    }
-
-    staggerChildren(content) {
-        // 精确流式选择子代元素，降低 DOM 查询范围
-        const selectors = [
-            '.chapter', '.date', '.subtitle', '.main-title', '.quote', '.story-text p', 
-            '.chat-img-wrapper', '.dual-photo-container', '.triple-photo-container', 
-            '.jiugongge-container', '.quad-photo-container', '.mosaic-grid-container', 
-            '.bullet-list-text p', '.echo-box', '.final-sentence', '.cake-candle-area', 
-            '.final-confession'
-        ].join(', ');
-
-        const children = content.querySelectorAll(selectors);
-        children.forEach((child, index) => {
-            child.style.setProperty('--delay-index', index);
-            child.classList.add('fade-in-up');
+    // 西高地小狗彩蛋
+    if (westie) {
+        westie.addEventListener("click", (e) => {
+            e.stopPropagation();
+            bubble.classList.add("show");
+            setTimeout(() => bubble.classList.remove("show"), 2500);
         });
     }
-}
 
-// ==========================================
-// MODULE 4: HIGH-PERFORMANCE CLICK PARTICLES (OBJECT POOL)
-// ==========================================
-class ParticlePool {
-    constructor(maxSize) {
-        this.maxSize = maxSize;
-        this.pool = [];
-    }
-
-    get() {
-        if (this.pool.length > 0) {
-            return this.pool.pop();
-        }
-        const element = document.createElement("div");
-        element.className = "romantic-particle";
-        return element;
-    }
-
-    release(element) {
-        if (this.pool.length < this.maxSize) {
-            element.remove();
-            // 清理脏属性，重置状态以便重复复用
-            element.style.cssText = "";
-            element.innerHTML = "";
-            this.pool.push(element);
-        } else {
-            element.remove();
-        }
-    }
-}
-
-class ClickParticlesModule {
-    constructor() {
-        this.pool = new ParticlePool(CONFIG.PARTICLES.POOL_MAX_SIZE);
-        this.bindEvents();
-    }
-
-    bindEvents() {
-        document.addEventListener("click", (e) => this.handleClick(e), { passive: true });
-    }
-
-    handleClick(e) {
-        // 过滤高危功能区，防止按钮点击冲突
+    // ==========================================
+    // 升级版：全屏浪漫粒子爆裂喷泉特效
+    // ==========================================
+    document.addEventListener("click", (e) => {
+        // 过滤掉音乐按钮和密码框
         if (e.target.closest("#musicBtn") || e.target.closest(".password-box")) return;
 
-        for (let i = 0; i < CONFIG.PARTICLES.CLICK_SPAWN_COUNT; i++) {
-            this.spawnParticle(e.clientX, e.clientY);
+        // 每次点击，一口气爆发出 6 颗不同方向、不同大小的微光爱心/樱花
+        const particles = ["❤️", "🌸", "✨"];
+        
+        for (let i = 0; i < 6; i++) {
+            const particle = document.createElement("div");
+            particle.className = "romantic-particle";
+            
+            // 随机选择样式
+            particle.innerHTML = particles[Math.floor(Math.random() * particles.length)];
+            
+            // 初始核心位置
+            particle.style.left = e.clientX + "px";
+            particle.style.top = e.clientY + "px";
+            
+            // 利用 CSS 变量随机分发每颗粒子的飞散方向和距离
+            const angle = Math.random() * Math.PI * 2;
+            const velocity = 40 + Math.random() * 60; // 爆炸开的速度
+            const x = Math.cos(angle) * velocity;
+            const y = Math.sin(angle) * velocity - 30; // 顺便带有一点往上漂的感觉
+            
+            particle.style.setProperty('--x', `${x}px`);
+            particle.style.setProperty('--y', `${y}px`);
+            particle.style.setProperty('--rot', `${Math.random() * 360}deg`);
+            particle.style.fontSize = 12 + Math.random() * 14 + "px"; // 错落有致的大小
+
+            document.body.appendChild(particle);
+            
+            // 动画播完自动销毁，极省内存
+            setTimeout(() => particle.remove(), 1400);
+        }
+    });
+
+    // 音乐播放控制
+    let manuallyPaused = false;
+    function toggleMusic() {
+        if (audio.paused) {
+            manuallyPaused = false;
+            audio.play().catch(() => {});
+            musicBtn.innerText = "🎵";
+            musicBtn.classList.remove("paused");
+        } else {
+            audio.pause();
+            manuallyPaused = true;
+            musicBtn.innerText = "🔇";
+            musicBtn.classList.add("paused");
         }
     }
 
-    spawnParticle(clientX, clientY) {
-        const particle = this.pool.get();
-        const emojis = CONFIG.PARTICLES.EMOJI_SET;
-        
-        particle.innerHTML = emojis[Math.floor(Math.random() * emojis.length)];
-        particle.style.left = `${clientX}px`;
-        particle.style.top = `${clientY}px`;
-
-        const angle = Math.random() * Math.PI * 2;
-        const velocity = 40 + Math.random() * 60;
-        const x = Math.cos(angle) * velocity;
-        const y = Math.sin(angle) * velocity - 30; // 微弱向上的浮力抗拉运动
-
-        particle.style.setProperty('--x', `${x}px`);
-        particle.style.setProperty('--y', `${y}px`);
-        particle.style.setProperty('--rot', `${Math.random() * 360}deg`);
-        particle.style.fontSize = `${12 + Math.random() * 14}px`;
-
-        document.body.appendChild(particle);
-
-        setTimeout(() => {
-            this.pool.release(particle);
-        }, CONFIG.TIMING.PARTICLE_DESTROY_MS);
-    }
-}
-
-// ==========================================
-// MODULE 5: EASTER EGGS & BIRTHDAY INTERACTIONS
-// ==========================================
-class BirthdayModule {
-    constructor() {
-        this.westie = document.getElementById("westieDog");
-        this.bubble = document.getElementById("bubble");
-        
-        if (this.westie) {
-            this.bindEvents();
-        }
-    }
-
-    bindEvents() {
-        this.westie.addEventListener("click", (e) => {
+    if (musicBtn) {
+        musicBtn.addEventListener("click", (e) => {
             e.stopPropagation();
-            this.triggerBubble();
-        }, { passive: true });
+            toggleMusic();
+        });
     }
 
-    triggerBubble() {
-        this.bubble.classList.add("show");
-        setTimeout(() => {
-            this.bubble.classList.remove("show");
-        }, CONFIG.TIMING.BUBBLE_SHOW_MS);
-    }
-}
-
-// ==========================================
-// MODULE 6: COMPREHENSIVE FIREWORK ENGINE (OOP)
-// ==========================================
-class FireworkParticle {
-    constructor(x, y, color) {
-        this.x = x;
-        this.y = y;
-        this.color = color;
-
-        const angle = Math.random() * Math.PI * 2;
-        const speed = Math.random() * 4 + 3.5;
-
-        this.vx = Math.cos(angle) * speed;
-        this.vy = Math.sin(angle) * speed;
-
-        this.alpha = 1;
-        // 残留衰减常数计算
-        this.decay = Math.random() * (CONFIG.FIREWORKS.MAX_DECAY - CONFIG.FIREWORKS.MIN_DECAY) + CONFIG.FIREWORKS.MIN_DECAY;
-        this.friction = CONFIG.FIREWORKS.FRICTION;
-        this.gravity = CONFIG.FIREWORKS.GRAVITY;
-        this.radius = Math.random() * 2.5 + 1;
-    }
-
-    update() {
-        this.vx *= this.friction;
-        this.vy *= this.friction;
-        this.vy += this.gravity;
-        this.x += this.vx;
-        this.y += this.vy;
-        this.alpha -= this.decay;
-    }
-
-    draw(ctx) {
-        ctx.save();
-        ctx.globalAlpha = this.alpha;
-        ctx.beginPath();
-        ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
-        ctx.fillStyle = this.color;
-        ctx.shadowBlur = 10;
-        ctx.shadowColor = this.color;
-        ctx.fill();
-        ctx.restore();
-    }
-}
-
-class FireworkEngine {
-    constructor() {
-        this.wishButton = document.getElementById('wishButton');
-        this.finalConfession = document.getElementById('finalConfession');
-        this.canvas = document.getElementById('fireworksCanvas');
-
-        if (!this.wishButton || !this.canvas) return;
-
-        this.ctx = this.canvas.getContext('2d');
-        this.particles = [];
-        this.animationId = null;
-        this.loopTimer = null;
-        this.isActive = false;
-
-        this.initCanvasSize();
-        this.bindEvents();
-    }
-
-    initCanvasSize() {
-        this.dpr = window.devicePixelRatio || 1;
-        this.canvas.width = this.canvas.parentElement.offsetWidth * this.dpr;
-        this.canvas.height = this.canvas.parentElement.offsetHeight * this.dpr;
-        
-        // 核心修复：每次尺寸重置彻底抹平累加变形，保持精准超清缩放
-        this.ctx.setTransform(this.dpr, 0, 0, this.dpr, 0, 0);
-    }
-
-    bindEvents() {
-        window.addEventListener('resize', () => this.initCanvasSize(), { passive: true });
-        this.wishButton.addEventListener('click', () => this.launchSequence(), { passive: true });
-    }
-
-    launchSequence() {
-        this.isActive = true;
-        this.wishButton.classList.add('activated');
-
-        // 1. 字幕浮现
-        setTimeout(() => {
-            if (this.finalConfession) {
-                this.finalConfession.classList.remove('hidden-confession');
-                this.finalConfession.classList.add('show-confession');
-            }
-        }, CONFIG.TIMING.CONFESSION_DELAY_MS);
-
-        // 2. 启动动画引擎核心主帧
-        this.startLoop();
-
-        const w = this.canvas.width / this.dpr;
-        const h = this.canvas.height / this.dpr;
-
-        // 3. 多重交错连环绽放
-        this.spawnFirework(w / 2, h / 2 - 20);
-        setTimeout(() => this.spawnFirework(w * 0.25, h * 0.35), 400);
-        setTimeout(() => this.spawnFirework(w * 0.75, h * 0.4), 800);
-
-        let loopCount = 0;
-        this.loopTimer = setInterval(() => {
-            if (loopCount > CONFIG.TIMING.FIREWORK_LOOP_MAX || !this.isActive) {
-                clearInterval(this.loopTimer);
-                return;
-            }
-            const randomX = w * 0.2 + Math.random() * (w * 0.6);
-            const randomY = h * 0.22 + Math.random() * (h * 0.28);
-            this.spawnFirework(randomX, randomY);
-            loopCount++;
-        }, CONFIG.TIMING.FIREWORK_LOOP_INTERVAL_MS);
-
-        // 12秒生命周期结束自动平稳自我毁灭
-        setTimeout(() => this.destroy(), CONFIG.TIMING.FIREWORK_DURATION_MS);
-    }
-
-    spawnFirework(x, y) {
-        if (!AppState.isPageVisible) return; // 后台静默状态拒绝创建粒子
-
-        const count = CONFIG.FIREWORKS.PARTICLE_COUNT;
-        const colors = CONFIG.FIREWORKS.COLORS;
-
-        for (let i = 0; i < count; i++) {
-            const color = i < CONFIG.FIREWORKS.CORE_BRIGHT_COUNT ? CONFIG.FIREWORKS.CORE_COLOR : colors[Math.floor(Math.random() * colors.length)];
-            this.particles.push(new FireworkParticle(x, y, color));
+    // 适配移动端首次触摸屏幕触发音频
+    document.addEventListener("touchstart", () => {
+        if (audio && audio.paused && !manuallyPaused && (!overlay || overlay.parentNode === null)) {
+            audio.play().catch(() => {});
         }
-    }
+    }, { once: true });
 
-    startLoop() {
-        if (this.animationId) cancelAnimationFrame(this.animationId);
-        
-        const render = () => {
-            if (!this.isActive) return;
+    // ==========================================
+    // 终极彩蛋：高端流星垂柳烟花引擎（16 Pro Max 专属丝滑版）
+    // ==========================================
+    const wishButton = document.getElementById('wishButton');
+    const finalConfession = document.getElementById('finalConfession');
+    const canvas = document.getElementById('fireworksCanvas');
 
-            this.ctx.fillStyle = 'rgba(0, 0, 0, 0.12)';
-            this.ctx.fillRect(0, 0, this.canvas.width / this.dpr, this.canvas.height / this.dpr);
+    if (wishButton && canvas) {
+        const ctx = canvas.getContext('2d');
+        let fireworkParticles = [];
+        let fireworksAnimationId = null;
+        let fireworkLoopTimer = null;
 
-            this.particles = this.particles.filter(p => p.alpha > 0);
-            this.particles.forEach(p => {
+        // 自适应高刷屏分辨率，保持超清抗锯齿
+        function resizeCanvas() {
+            const dpr = window.devicePixelRatio || 1;
+            canvas.width = canvas.parentElement.offsetWidth * dpr;
+            canvas.height = canvas.parentElement.offsetHeight * dpr;
+            ctx.scale(dpr, dpr);
+        }
+        resizeCanvas();
+        window.addEventListener('resize', resizeCanvas);
+
+        // 高级流星垂柳粒子类定义
+        class LuxuryParticle {
+            constructor(x, y, color) {
+                this.x = x;
+                this.y = y;
+                this.color = color;
+                
+                // 圆周辐射速度
+                const angle = Math.random() * Math.PI * 2;
+                const speed = Math.random() * 4 + 3.5; // 扩大爆炸初始张力
+                
+                this.vx = Math.cos(angle) * speed;
+                this.vy = Math.sin(angle) * speed;
+                
+                this.alpha = 1;
+                this.decay = Math.random() * 0.008 + 0.006; // 完美延长生命周期，让绽放变长
+                this.friction = 0.96; // 空气阻力（产生从快到慢的拟真感）
+                this.gravity = 0.11;  // 注入灵魂的垂柳下坠重力
+                
+                this.radius = Math.random() * 2.5 + 1;
+            }
+
+            draw() {
+                ctx.save();
+                ctx.globalAlpha = this.alpha;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+                ctx.fillStyle = this.color;
+                
+                // 原生 Canvas 霓虹微发光滤镜
+                ctx.shadowBlur = 10;
+                ctx.shadowColor = this.color;
+                
+                ctx.fill();
+                ctx.restore();
+            }
+
+            update() {
+                this.vx *= this.friction;
+                this.vy *= this.friction;
+                this.vy += this.gravity; 
+                this.x += this.vx;
+                this.y += this.vy;
+                this.alpha -= this.decay;
+            }
+        }
+
+        // 释放一发绚丽莫兰迪烟花
+        function launchLuxuryFirework(x, y) {
+            // 选用极具高级感的专属浪漫配色：白金、玫瑰粉、极光紫、香槟金、心动红
+            const luxuryColors = ['#ffffff', '#ffb6c1', '#dda0dd', '#ffd700', '#ff4d4d', '#ff69b4'];
+            const count = 85; // 密度翻倍，视觉更加立体丰满
+
+            for (let i = 0; i < count; i++) {
+                // 核心前 15 颗粒子强制为白金光芒，模拟现实火药炸开瞬间的核心极亮
+                const color = i < 15 ? '#ffffff' : luxuryColors[Math.floor(Math.random() * luxuryColors.length)];
+                fireworkParticles.push(new LuxuryParticle(x, y, color));
+            }
+        }
+
+        // 核心渲染循环（流星拖尾残影的核心）
+        function renderFireworks() {
+            // 通过覆盖半透明黑色层，让上一帧的粒子轨迹化为梦幻拖尾
+            ctx.fillStyle = 'rgba(0, 0, 0, 0.12)';
+            ctx.fillRect(0, 0, canvas.width / (window.devicePixelRatio || 1), canvas.height / (window.devicePixelRatio || 1));
+
+            fireworkParticles = fireworkParticles.filter(p => p.alpha > 0);
+            fireworkParticles.forEach(p => {
                 p.update();
-                p.draw(this.ctx);
+                p.draw();
             });
 
-            // 如果当前无存活粒子且已过了循环周期，可平滑中止循环
-            if (this.particles.length === 0 && !this.loopTimer) {
-                this.stopLoop();
-                return;
-            }
-
-            this.animationId = requestAnimationFrame(render);
-        };
-
-        this.animationId = requestAnimationFrame(render);
-    }
-
-    stopLoop() {
-        if (this.animationId) {
-            cancelAnimationFrame(this.animationId);
-            this.animationId = null;
+            fireworksAnimationId = requestAnimationFrame(renderFireworks);
         }
-    }
 
-    suspend() {
-        // 切后台挂起
-        this.stopLoop();
-    }
+        // 点击许愿按钮触发终极浪漫
+        wishButton.addEventListener('click', () => {
+            wishButton.classList.add('activated');
+            
+            // 1. 让锁定的终极表白和烟花交织在一起缓缓浮现
+            setTimeout(() => {
+                if (finalConfession) {
+                    finalConfession.classList.remove('hidden-confession');
+                    finalConfession.classList.add('show-confession');
+                }
+            }, 600);
 
-    resume() {
-        // 切回前台恢复
-        if (this.isActive && AppState.isPageVisible) {
-            this.startLoop();
-        }
-    }
+            // 2. 启动 Canvas 主引擎
+            renderFireworks();
 
-    destroy() {
-        this.isActive = false;
-        this.stopLoop();
-        if (this.loopTimer) {
-            clearInterval(this.loopTimer);
-            this.loopTimer = null;
-        }
-        this.particles = [];
-        this.ctx.clearRect(0, 0, this.canvas.width, this.canvas.height);
-    }
-}
+            const w = canvas.width / (window.devicePixelRatio || 1);
+            const h = canvas.height / (window.devicePixelRatio || 1);
 
-// ==========================================
-// MODULE 7: GENERAL UTILITIES LAYER
-// ==========================================
-class UtilitiesModule {
-    constructor() {
-        this.initScrollNavigation();
-    }
+            // 3. 【连环花火交力秀】开始运转
+            // 第一波：屏幕正中央主花火盛大绽放
+            launchLuxuryFirework(w / 2, h / 2 - 20);
 
-    initScrollNavigation() {
-        // 桥接映射原生 HTML 触发的全局全局调用，保持向后兼容性
-        window.scrollToNext = function() {
-            const pages = document.querySelectorAll(".page");
-            if (pages[1]) {
-                pages[1].scrollIntoView({ behavior: "smooth" });
-            }
-        };
+            // 第二波：左上角、右上角高空错落接力绽放
+            setTimeout(() => launchLuxuryFirework(w * 0.25, h * 0.35), 400);
+            setTimeout(() => launchLuxuryFirework(w * 0.75, h * 0.4), 800);
+
+            // 第三波：夜空随机接力大秀，持续 8 秒，每 1.2 秒自动诞生一发浪漫
+            let loopCount = 0;
+            fireworkLoopTimer = setInterval(() => {
+                if (loopCount > 5) {
+                    clearInterval(fireworkLoopTimer);
+                    return;
+                }
+                const randomX = w * 0.2 + Math.random() * (w * 0.6);
+                const randomY = h * 0.22 + Math.random() * (h * 0.28);
+                launchLuxuryFirework(randomX, randomY);
+                loopCount++;
+            }, 1200);
+            
+            // 12 秒后花火完全熄灭平稳静止，不吃后台内存与电量
+            setTimeout(() => {
+                cancelAnimationFrame(fireworksAnimationId);
+                clearInterval(fireworkLoopTimer);
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+            }, 12000);
+        });
     }
-}
+});
