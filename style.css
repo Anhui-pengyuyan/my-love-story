@@ -16,7 +16,7 @@ body {
     overflow: hidden;
 }
 
-/* 核心滚动视窗：完美适配移动端动态视口高度 */
+/* 核心滚动视窗：完美适配 16 Pro Max 动态视口高度 */
 .scroll-container {
     width: 100vw;
     height: 100vh;
@@ -28,7 +28,7 @@ body {
 }
 
 /* ==========================================
-   2. 页面容器（完美适配 Safari，防止内容挤压重叠）
+   2. 页面容器（解决字数溢出被裁剪的杀手锏）
    ========================================== */
 .page {
     width: 100vw;
@@ -37,466 +37,356 @@ body {
     scroll-snap-align: start;
     scroll-snap-stop: always;
     display: flex;
-    flex-direction: column; /* 设为纵向流式布局 */
     justify-content: center;
     align-items: center;
+    padding: calc(40px + env(safe-area-inset-top)) 24px calc(40px + env(safe-area-inset-bottom)) 24px;
     position: relative;
-    padding: 24px 20px;
     background-color: #000000;
-    overflow-y: auto; /* 核心：当字数或大图超出屏幕时，允许局部平滑滚动，不卡死高度 */
-    -webkit-overflow-scrolling: touch;
 }
 
-/* 允许内容较长的长页面 */
-.long-page {
-    scroll-snap-align: none; 
-    height: auto;
+/* 💡 重构后的长白寿信模式：如果是最后一页，取消100vh限制，允许向下无线无限延展 */
+.page.long-page {
+    height: auto !important;
+    min-height: 100vh;
     min-height: 100dvh;
+    scroll-snap-align: start; 
+    scroll-snap-stop: normal; /* 允许松开磁吸，畅快阅读 */
+    display: block; /* 转换为块级流，防止弹性挤压 */
+    padding-top: 60px;
+    padding-bottom: 80px;
 }
 
-/* 内容包裹层 */
-.page .content {
+/* 内容主区域容器 */
+.content {
+    max-width: 460px;
     width: 100%;
-    max-width: 440px;
     text-align: center;
-    margin: auto 0; /* 核心：内容未超出时完美居中，超出时靠顶部排列，留出舒适边距 */
-    flex-shrink: 0; /* 核心：极致防止子元素被 Safari 强行压扁变形 */
+    margin: 0 auto;
 }
 
 /* ==========================================
-   3. 密码解锁遮罩层
+   3. 优雅高级的底层硬件加速动画系统
+   ========================================== */
+.content > * {
+    opacity: 0;
+    transform: translateY(18px);
+    will-change: transform, opacity;
+}
+
+/* 经由 JS 触发的单次优雅淡入 */
+.content.visible > * {
+    animation: fadeInUpMuvie 0.85s cubic-bezier(0.215, 0.610, 0.355, 1) forwards;
+    animation-delay: calc(var(--delay-index) * 0.15s);
+}
+
+@keyframes fadeInUpMuvie {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* ==========================================
+   4. 密码框样式组件
    ========================================== */
 .password-overlay {
     position: fixed;
-    top: 0;
-    left: 0;
-    width: 100vw;
-    height: 100vh;
-    height: 100dvh;
-    background-color: #000000;
-    z-index: 9999;
-    display: flex;
-    justify-content: center;
-    align-items: center;
+    top: 0; left: 0; width: 100vw; height: 100vh; height: 100dvh;
+    background: #000000; z-index: 10000;
+    display: flex; justify-content: center; align-items: center;
     transition: opacity 0.5s ease;
 }
-
 .password-box {
-    text-align: center;
-    width: 80%;
-    max-width: 320px;
+    text-align: center; width: 80%; max-width: 300px;
 }
-
 .password-box h2 {
-    font-size: 18px;
-    font-weight: 400;
-    color: #a1a1a6;
-    margin-bottom: 25px;
-    letter-spacing: 1px;
+    font-size: 18px; font-weight: 400; color: #e8e8ed; margin-bottom: 20px; letter-spacing: 1px;
 }
-
 .password-box input {
-    width: 100%;
-    background: #1c1c1e;
-    border: none;
-    border-radius: 12px;
-    padding: 16px;
-    color: #ffffff;
-    font-size: 24px;
-    text-align: center;
-    letter-spacing: 8px;
-    margin-bottom: 20px;
-    outline: none;
+    width: 100%; background: #1c1c1e; border: 1px solid #3a3a3c; border-radius: 12px;
+    padding: 12px; text-align: center; color: #fff; font-size: 20px; letter-spacing: 4px;
+    margin-bottom: 15px; outline: none;
 }
-
 .password-box button {
-    background: #ffffff;
-    color: #000000;
-    border: none;
-    border-radius: 12px;
-    padding: 14px 40px;
-    font-size: 16px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: background 0.2s;
-}
-
-.password-box button:active {
-    background: #d2d2d7;
+    background: #ffffff; color: #000; border: none; padding: 10px 30px; border-radius: 20px;
+    font-size: 14px; font-weight: 500; cursor: pointer; width: 100%;
 }
 
 /* ==========================================
-   4. 音乐控制按钮
+   5. 经典排版与字体设计
    ========================================== */
-.music-control {
-    position: fixed;
-    top: calc(20px + env(safe-area-inset-top));
-    right: 20px;
-    width: 40px;
-    height: 40px;
-    background: rgba(30, 30, 30, 0.6);
-    border-radius: 50%;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    font-size: 18px;
-    z-index: 1000;
-    cursor: pointer;
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-}
-
-.music-rotate {
-    animation: rotateMusic 4s linear infinite;
-}
-
-@keyframes rotateMusic {
-    from { transform: rotate(0deg); }
-    to { transform: rotate(360deg); }
-}
+.subtitle { font-size: 14px; color: #86868b; margin-bottom: 12px; letter-spacing: 0.5px; line-height: 1.4; }
+.main-title { font-size: 22px; font-weight: 600; line-height: 1.5; margin-bottom: 24px; letter-spacing: -0.5px; }
+.quote { font-size: 14px; color: #a1a1a6; line-height: 1.6; font-style: italic; }
+.chapter { display: block; font-size: 13px; color: #ff3b30; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 6px; font-weight: 500; }
+.date { display: block; font-size: 12px; color: #86868b; margin-bottom: 20px; }
+.story-text p { font-size: 15px; color: #e8e8ed; line-height: 1.8; margin-bottom: 10px; text-align: justify; }
+.story-text .highlight { color: #ffffff; font-weight: 600; display: block; margin-top: 15px; }
 
 /* ==========================================
-   5. 通用精美排版元素
+   6. 错落及栅格相册框架（自适应防变形）
    ========================================== */
-.main-title {
-    font-size: 26px;
-    font-weight: 700;
-    letter-spacing: -0.5px;
-    margin-bottom: 12px;
-    background: linear-gradient(180deg, #ffffff 0%, #d2d2d7 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-}
-
-.subtitle {
-    font-size: 14px;
-    color: #86868b;
-    margin-bottom: 24px;
-    letter-spacing: 0.5px;
-}
-
-.story-text {
-    font-size: 16px;
-    line-height: 1.8;
-    color: #e8e8ed;
-    font-weight: 400;
-    text-align: justify;
-    margin: 20px 0;
-}
-
-.story-text p {
-    margin-bottom: 16px;
-}
-
-/* 时间戳与高亮标签 */
-.time-tag {
-    display: inline-block;
-    padding: 5px 12px;
-    background: #1c1c1e;
-    color: #ff453a;
-    border-radius: 20px;
-    font-size: 12px;
-    font-weight: 600;
-    margin-bottom: 15px;
-    border: 1px solid rgba(255, 69, 58, 0.15);
-}
-
-.location-tag {
-    display: inline-block;
-    padding: 5px 12px;
-    background: #1c1c1e;
-    color: #30d158;
-    border-radius: 20px;
-    font-size: 12px;
-    font-weight: 600;
-    margin-bottom: 15px;
-    border: 1px solid rgba(48, 209, 88, 0.15);
-}
-
-/* 下滑小提示 */
-.scroll-arrow {
-    position: absolute;
-    bottom: calc(15px + env(safe-area-inset-bottom));
-    left: 50%;
-    transform: translateX(-50%);
-    font-size: 14px;
-    color: rgba(255, 255, 255, 0.25);
-    animation: bounceArrow 2s infinite;
-    font-weight: 300;
-    letter-spacing: 1px;
-}
-
-@keyframes bounceArrow {
-    0%, 20%, 50%, 80%, 100% { transform: translateX(-50%) translateY(0); }
-    40% { transform: translateX(-50%) translateY(-6px); }
-    60% { transform: translateX(-50%) translateY(-3px); }
-}
-
-/* ==========================================
-   6. 特定页面独有高级样式（如：第11章聊天截图等）
-   ========================================== */
-
-/* 柴犬头像区域 */
-.avatar-container {
-    position: relative;
-    width: 90px;
-    height: 90px;
-    margin: 0 auto 20px auto;
-}
-
-.westie-img {
-    width: 100%;
-    height: 100%;
-    border-radius: 50%;
-    border: 2px solid rgba(255,255,255,0.2);
-    object-fit: cover;
-    cursor: pointer;
-}
-
-.secret-bubble {
-    position: absolute;
-    top: -35px;
-    left: 50%;
-    transform: translateX(-50%) scale(0.8);
-    background: #ffffff;
-    color: #000000;
-    padding: 6px 14px;
-    border-radius: 16px;
-    font-size: 12px;
-    font-weight: 600;
-    white-space: nowrap;
-    opacity: 0;
-    pointer-events: none;
-    transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
-    box-shadow: 0 4px 12px rgba(255,255,255,0.15);
-}
-
-.secret-bubble::after {
-    content: '';
-    position: absolute;
-    bottom: -5px;
-    left: 50%;
-    transform: translateX(-50%);
-    border-width: 5px 5px 0;
-    border-style: solid;
-    border-color: #ffffff transparent;
-}
-
-.secret-bubble.show-bubble {
-    opacity: 1;
-    transform: translateX(-50%) scale(1);
-}
-
-/* 截图包裹容器：完美适配 Safari 高度计算 */
+/* 统一黑框手机截图包装 */
 .chat-img-wrapper {
-    max-width: 320px;
-    max-height: 38dvh; /* 限制视口高度占比 */
-    overflow: hidden;
-    border-radius: 20px;
-    border: 3px solid #1c1c1e;
-    box-shadow: 0 10px 30px rgba(255, 255, 255, 0.02);
-    margin: 12px auto;
-    background: #121212;
-    display: flex;
-    align-items: center;
-    justify-content: center;
+    width: 82%; max-height: 40dvh; overflow: hidden; border-radius: 20px;
+    border: 4px solid #1c1c1e; box-shadow: 0 15px 35px rgba(255, 255, 255, 0.03);
+    margin: 15px auto; background: #121212;
 }
+.chat-img { width: 100%; display: block; object-fit: contain; }
 
-.chat-img {
-    width: 100%;
-    height: auto; /* 核心：高度自适应，杜绝拉伸和压扁重叠 */
-    display: block;
-    object-fit: contain;
-}
+/* 双图并排 */
+.dual-photo-container { display: flex; justify-content: center; gap: 10px; width: 100%; margin: 15px auto; }
+.mini-photo-wrapper { flex: 1; height: 160px; overflow: hidden; border-radius: 12px; border: 2px solid #1c1c1e; }
+.mini-photo-wrapper img { width: 100%; height: 100%; object-fit: cover; }
+
+/* 三图并排 */
+.triple-photo-container { display: flex; justify-content: center; gap: 6px; width: 100%; margin: 12px auto; }
+.micro-photo-wrapper { flex: 1; text-align: center; }
+.micro-photo-wrapper img { width: 100%; height: 95px; object-fit: cover; border-radius: 8px; border: 1.5px solid #1c1c1e; }
+.photo-tag { display: block; font-size: 10px; color: #8e8e93; margin-top: 4px; }
+
+/* 完美九宫格 */
+.jiugongge-container { display: grid; grid-template-columns: repeat(3, 1fr); gap: 5px; width: 90%; margin: 12px auto; }
+.grid-photo-item { width: 100%; aspect-ratio: 1 / 1; overflow: hidden; border-radius: 6px; border: 1px solid rgba(255, 255, 255, 0.05); }
+.grid-photo-item img { width: 100%; height: 100%; object-fit: cover; }
+
+/* 四宫格照片 */
+.quad-photo-container { display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px; width: 85%; margin: 12px auto; }
+.quad-photo-item { width: 100%; height: 95px; overflow: hidden; border-radius: 8px; border: 2px solid #1c1c1e; }
+.quad-photo-item img { width: 100%; height: 100%; object-fit: cover; }
+
+/* 最终章 12格电影流 */
+.mosaic-grid-container { display: grid; grid-template-columns: repeat(4, 1fr); gap: 4px; width: 90%; margin: 10px auto; }
+.mosaic-item { width: 100%; aspect-ratio: 1 / 1; overflow: hidden; border-radius: 4px; }
+.mosaic-item img { width: 100%; height: 100%; object-fit: cover; filter: grayscale(15%); transition: filter 0.3s; }
+.mosaic-item img:active { filter: grayscale(0%); }
+
+.bullet-list-text p { font-size: 12px !important; color: #a2a2a7 !important; margin: 4px 0 !important; text-align: center !important; }
 
 /* ==========================================
-   7. 最终生日特定页 & 浪漫烟花专属
+   7. 电影独白后记排版
    ========================================== */
-.birthday-theme-bg {
-    background: radial-gradient(circle at center, #1a0b1a 0%, #000000 100%) !important;
+.epilogue-page { padding: 0 10px; }
+.epilogue-text p { font-size: 13.5px !important; color: #a2a2a7 !important; line-height: 1.8 !important; }
+.split-line { margin-top: 10px !important; border-top: 1px dashed #2c2c2e; padding-top: 10px; }
+.highlight-soft { color: #e5e5ea !important; font-weight: 500; }
+.echo-box { margin: 12px 0; padding-left: 10px; border-left: 2px solid #3a3a3c; }
+.echo-box p { font-size: 12.5px !important; color: #bfbfc4 !important; font-style: italic; text-align: left !important; margin: 6px 0 !important; }
+.my-answer { color: #ffffff !important; font-size: 13.5px !important; text-align: left; }
+.final-sentence { font-size: 15px !important; font-weight: 600; text-align: center !important; color: #ffffff; text-shadow: 0 0 8px rgba(255, 255, 255, 0.2); }
+
+/* ==========================================
+   8. 生日殿堂长信页
+   ========================================== */
+.birthday-theme-bg { background: radial-gradient(circle at center, #1a1a1c 0%, #000000 100%) !important; }
+.birthday-page { padding: 20px 10px; }
+.birthday-title { display: block; font-size: 11px; letter-spacing: 5px; color: #ff3b30; font-weight: 600; margin-bottom: 20px; }
+
+/* 纯CSS微光蜡烛 */
+.cake-candle-area { position: relative; width: 40px; height: 60px; margin: 0 auto 20px auto; }
+.candle { position: absolute; left: 50%; bottom: 0; width: 12px; height: 40px; background: linear-gradient(to right, #ff9500, #ffcc00); border-radius: 3px; transform: translateX(-50%); }
+.flame { position: absolute; left: 50%; top: -14px; width: 10px; height: 16px; border-radius: 50% 50% 20% 20% / 60% 60% 40% 40%; transform: translateX(-50%); animation: flicker 1.2s infinite ease-in-out; background: linear-gradient(to bottom, #ffcc00 0%, #ff3b30 100%); box-shadow: 0 0 12px rgba(255, 149, 0, 0.7); }
+@keyframes flicker { 0%, 100% { transform: translateX(-50%) scale(1); } 50% { transform: translateX(-46%) scale(1.06) skewX(2deg); } }
+.candle-text { position: absolute; width: 100%; bottom: -18px; font-size: 10px; color: #8e8e93; letter-spacing: 1px; text-align: center; }
+
+/* 告白信笺 */
+.birthday-letter { margin-top: 30px; }
+.birthday-letter p { font-size: 14px !important; line-height: 1.8 !important; color: #d1d1d6 !important; text-align: left !important; margin: 12px 0 !important; }
+.letter-salutation { font-size: 16px !important; font-weight: 600; color: #ffffff !important; }
+.letter-highlight { color: #ffcc00 !important; font-weight: 500; border-bottom: 1px dashed rgba(255, 204, 0, 0.4); padding-bottom: 2px; }
+
+.final-confession { margin-top: 40px; }
+.love-you { font-size: 18px !important; font-weight: 600; color: #ffffff !important; letter-spacing: 3px; margin-bottom: 4px !important; }
+.queen { font-size: 13px !important; color: #a2a2a7 !important; margin-bottom: 12px !important; }
+.hbd-wish { font-size: 20px !important; font-weight: 700; color: #ff3b30 !important; letter-spacing: 2px; text-shadow: 0 0 10px rgba(255, 59, 48, 0.3); }
+
+/* ==========================================
+   9. 交互彩蛋、音乐与小红心
+   ========================================== */
+.avatar-container { position: relative; width: 110px; height: 110px; margin: 0 auto 20px auto; }
+.westie-img { width: 100%; height: 100%; border-radius: 50%; object-fit: cover; border: 2px solid rgba(255, 255, 255, 0.2); cursor: pointer; }
+.secret-bubble { position: absolute; bottom: -35px; left: 50%; transform: translateX(-50%); background: rgba(255, 255, 255, 0.12); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); padding: 5px 12px; border-radius: 12px; font-size: 12px; white-space: nowrap; opacity: 0; transition: opacity 0.3s; pointer-events: none; border: 1px solid rgba(255, 255, 255, 0.1); color: #fff; }
+.secret-bubble.show { opacity: 1; }
+
+.next-btn { margin-top: 25px; background: #fff; color: #000; border: none; padding: 10px 24px; border-radius: 20px; font-size: 13px; font-weight: 500; cursor: pointer; }
+.music-control { position: fixed; top: calc(16px + env(safe-area-inset-top)); right: 20px; z-index: 999; width: 36px; height: 36px; background: rgba(255, 255, 255, 0.1); backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 50%; display: flex; justify-content: center; align-items: center; font-size: 15px; cursor: pointer; }
+
+/* 解决可能出现的音乐按键旋转掉帧，采用简单的呼吸微动 */
+@keyframes pulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.08); } }
+.music-control:not(.paused) { animation: pulse 2s infinite ease-in-out; }
+
+.heart { position: fixed; z-index: 9999; pointer-events: none; font-size: 20px; will-change: transform, opacity; animation: floatUp 1.2s cubic-bezier(0.1, 0.8, 0.3, 1) forwards; }
+@keyframes floatUp { 0% { transform: translateY(0) scale(0.8) rotate(0deg); opacity: 1; } 100% { transform: translateY(-100px) scale(1.3) rotate(12deg); opacity: 0; } }
+
+.scroll-arrow { position: absolute; bottom: calc(15px + env(safe-area-inset-bottom)); left: 50%; transform: translateX(-50%); opacity: 0.3; font-size: 14px; animation: bounce 2s infinite; pointer-events: none; }
+.final-heart { color: #ff3b30 !important; font-size: 14px !important; animation: heartBeat 2.5s infinite ease-in-out; }
+@keyframes bounce { 0%, 20%, 50%, 80%, 100% { transform: translate(-50%, 0); } 40% { transform: translate(-50%, -6px); } 60% { transform: translate(-50%, -3px); } }
+@keyframes heartBeat { 0%, 100% { opacity: 0.3; transform: scale(1); } 50% { opacity: 0.7; transform: scale(1.1); } }
+
+/* 浪漫粒子动画 */
+.romantic-particle {
+    position: fixed;
+    z-index: 9999;
+    pointer-events: none;
+    will-change: transform, opacity;
+    animation: particleSpread 1.4s cubic-bezier(0.1, 0.8, 0.25, 1) forwards;
 }
 
-.birthday-page {
-    padding: 10px 0;
+@keyframes particleSpread {
+    0% {
+        transform: translate(0, 0) scale(0.6) rotate(0deg);
+        opacity: 1;
+        filter: blur(0px);
+    }
+    60% {
+        opacity: 0.9;
+    }
+    100% {
+        /* 向四个方向爆开，同时受重力影响有一点点下坠 */
+        transform: translate(var(--x), calc(var(--y) + 80px)) scale(1.1) rotate(var(--rot));
+        opacity: 0;
+        filter: blur(1px);
+    }
 }
 
-.birthday-title {
-    font-size: 11px;
-    font-weight: 700;
-    letter-spacing: 4px;
-    color: #ffd700;
-    display: block;
-    margin-bottom: 20px;
-    text-shadow: 0 0 10px rgba(255, 215, 0, 0.3);
-}
 
-/* 蜡烛艺术区域 */
-.cake-candle-area {
-    margin: 25px 0;
-    position: relative;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-}
-
-.candle {
-    width: 14px;
-    height: 50px;
-    background: linear-gradient(90deg, #ff9f0a, #ff453a);
-    border-radius: 4px 4px 0 0;
-    position: relative;
-    box-shadow: 0 0 10px rgba(255, 69, 58, 0.3);
-}
-
+/* 1. 烛火的呼吸微动效果 */
 .flame {
-    width: 12px;
-    height: 24px;
-    background: #ff9f0a;
-    border-radius: 50% 50% 20% 20% / 60% 60% 40% 40%;
-    position: absolute;
-    top: -28px;
-    left: 1px;
-    animation: flicker 1.2s infinite ease-in-out;
-    box-shadow: 0 0 20px #ff9f0a, 0 0 40px #ff453a;
-    background: linear-gradient(180deg, #fff 0%, #ff9f0a 40%, #ff453a 100%);
+    /* 保持你原本的形状，加上呼吸动画 */
+    animation: flameFlicker 1.5s ease-in-out infinite alternate;
 }
 
-@keyframes flicker {
-    0%, 100% { transform: scale(1) rotate(-1deg); opacity: 0.9; }
-    50% { transform: scale(1.06) rotate(1.5deg); opacity: 1; }
+@keyframes flameFlicker {
+    0% { transform: scale(1) rotate(-1deg); opacity: 0.9; filter: drop-shadow(0 0 5px #ffaa00); }
+    100% { transform: scale(1.1) rotate(1deg); opacity: 1; filter: drop-shadow(0 0 12px #ff4500); }
 }
 
-.candle-text {
-    font-size: 28px;
-    font-weight: 800;
-    letter-spacing: 2px;
-    color: #ffffff;
-    margin-top: 12px;
-    font-family: 'Times New Roman', serif;
-}
-
-.birthday-letter {
-    background: rgba(255, 255, 255, 0.03);
-    border: 1px solid rgba(255, 255, 255, 0.06);
-    border-radius: 20px;
-    padding: 24px;
-    backdrop-filter: blur(10px);
-    -webkit-backdrop-filter: blur(10px);
-    text-align: left;
-}
-
-.letter-salutation {
-    font-weight: 600;
-    color: #ffd700;
-    font-size: 17px;
-}
-
-.letter-highlight {
-    color: #ff3b30;
-    font-weight: 600;
+/* 2. 引导文字的小动画，若隐若现提醒她去吹 */
+.blow-hint-text {
+    font-size: 14px;
+    color: rgba(255, 255, 255, 0.6);
     text-align: center;
-    display: block;
-    margin: 18px 0;
-    font-size: 17px;
+    margin: 20px 0;
+    animation: pulseHint 2s infinite;
 }
 
-/* 最终浪漫表白文本框 */
-.final-confession {
-    margin: 25px 0 15px 0;
-    padding: 20px;
-    background: rgba(255, 59, 48, 0.06);
-    border: 1px solid rgba(255, 59, 48, 0.15);
-    border-radius: 16px;
-    font-size: 16px;
-    line-height: 1.8;
-    color: #ffdee9;
-    text-align: center;
+@keyframes pulseHint {
+    0%, 100% { opacity: 0.4; }
+    50% { opacity: 0.9; }
 }
 
+/* 3. 终极告白的初始状态：隐藏、缩小 */
 .final-confession.hidden-confession {
     opacity: 0;
-    filter: blur(10px); 
-    transform: translateY(20px); 
+    transform: scale(0.9);
     pointer-events: none;
-    display: none; /* 隐藏时不霸占排版高度 */
-    transition: all 2.5s cubic-bezier(0.215, 0.610, 0.355, 1);
+    transition: all 2s cubic-bezier(0.215, 0.610, 0.355, 1);
 }
 
+/* 4. 吹灭后由 JS 附加的类名：优雅绽放 */
 .final-confession.show-confession {
-    display: block; /* 显现时再切回流式高度 */
+    opacity: 1;
+    transform: scale(1);
+    pointer-events: auto;
+    /* 黑色电影高级感：金色/粉色微光字效果 */
+    text-shadow: 0 0 10px rgba(255, 192, 203, 0.3);
+}
+
+/* 许愿区域与按钮 */
+.wish-action-area {
+    margin: 30px 0;
+    display: flex;
+    justify-content: center;
+}
+.wish-btn {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    padding: 15px 25px;
+    border-radius: 30px;
+    color: #fff;
+    cursor: pointer;
+    outline: none;
+    transition: all 0.3s ease;
+    animation: buttonPulse 2s infinite ease-in-out;
+}
+.fingerprint-icon {
+    font-size: 24px;
+    display: block;
+    margin-bottom: 5px;
+    animation: heartBeat 1.5s infinite;
+}
+.btn-tip {
+    font-size: 12px;
+    color: #a2a2a7;
+    letter-spacing: 1px;
+}
+/* 点击后的样式变化 */
+.wish-btn.activated {
+    transform: scale(0.9);
+    opacity: 0;
+    pointer-events: none;
+}
+@keyframes buttonPulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(255, 59, 48, 0.2); }
+    50% { box-shadow: 0 0 15px 5px rgba(255, 59, 48, 0.4); }
+}
+
+/* 终极告白默认锁定 */
+.final-confession.hidden-confession {
+    opacity: 0;
+    transform: translateY(20px);
+    transition: all 2s cubic-bezier(0.215, 0.610, 0.355, 1);
+}
+.final-confession.show-confession {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+/* 1. 一开始绝对隐藏，且不占位置、无法点击 */
+.final-confession.hidden-confession {
+    opacity: 0;
+    filter: blur(10px); /* 朦胧模糊感 */
+    transform: translateY(30px); /* 往下沉 30 像素 */
+    pointer-events: none;
+    transition: all 2.5s cubic-bezier(0.215, 0.610, 0.355, 1); /* 优雅的 2.5 秒慢速浮现 */
+}
+
+/* 2. 点击按钮后，由 JS 附加这个类，文字像电影字幕一样散开焦距浮现 */
+.final-confession.show-confession {
     opacity: 1;
     filter: blur(0px);
     transform: translateY(0);
     pointer-events: auto;
-    text-shadow: 0 0 12px rgba(255, 255, 255, 0.4);
+    text-shadow: 0 0 12px rgba(255, 255, 255, 0.4); /* 微微带有一层浪漫的白光 */
 }
 
-/* 按钮专属设计 */
+/* 许愿按钮样式 */
 .wish-action-area {
-    margin: 24px 0;
+    margin: 30px 0;
     display: flex;
     justify-content: center;
 }
-
 .wish-btn {
-    background: linear-gradient(135deg, #ff2d55 0%, #ff3b30 100%);
-    color: #ffffff;
-    border: none;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    padding: 15px 25px;
     border-radius: 30px;
-    padding: 16px 36px;
-    font-size: 16px;
-    font-weight: 600;
-    letter-spacing: 1px;
+    color: #fff;
     cursor: pointer;
-    box-shadow: 0 8px 25px rgba(255, 45, 85, 0.3);
-    transition: transform 0.2s, box-shadow 0.2s;
-    display: flex;
-    align-items: center;
-    gap: 8px;
+    transition: all 0.4s ease;
+    animation: buttonPulse 2s infinite ease-in-out;
 }
-
-.wish-btn:active {
-    transform: scale(0.96);
-    box-shadow: 0 4px 12px rgba(255, 45, 85, 0.2);
-}
-
-.final-heart {
-    color: #ff3b30;
-    animation: pulseHeart 1.5s infinite;
-}
-
-@keyframes pulseHeart {
-    0%, 100% { transform: translateX(-50%) scale(1); }
-    50% { transform: translateX(-50%) scale(1.2); }
-}
-
-/* ==========================================
-   8. 高级极其平滑的流式动效（优化Safari复合层）
-   ========================================== */
-.content > * {
+.wish-btn.activated {
+    transform: scale(0.8);
     opacity: 0;
-    transform: translateY(12px); /* 减到位移 12px，极致规避 Safari 复合层重叠 Bug */
-    transition: opacity 1.2s cubic-bezier(0.25, 1, 0.5, 1), transform 1.2s cubic-bezier(0.25, 1, 0.5, 1);
-    
-    /* 强制 Safari 开启独立硬件加速复合层，防止渲染紊乱 */
-    will-change: transform, opacity;
-    backface-visibility: hidden;
-    -webkit-backface-visibility: hidden;
+    pointer-events: none; /* 点完就永久消失，把舞台让给表白文字 */
 }
-
-.content.animate-active > * {
-    opacity: 1;
-    transform: translateY(0);
+@keyframes buttonPulse {
+    0%, 100% { box-shadow: 0 0 0 0 rgba(255, 59, 48, 0.2); }
+    50% { box-shadow: 0 0 15px 5px rgba(255, 59, 48, 0.4); }
 }
-
-/* 错落优雅的视差流式浮现 */
-.content > *:nth-child(1) { transition-delay: 0.1s; }
-.content > *:nth-child(2) { transition-delay: 0.25s; }
-.content > *:nth-child(3) { transition-delay: 0.4s; }
-.content > *:nth-child(4) { transition-delay: 0.55s; }
-.content > *:nth-child(5) { transition-delay: 0.7s; }
-.content > *:nth-child(6) { transition-delay: 0.85s; }
+.fingerprint-icon { display: block; font-size: 24px; margin-bottom: 5px; }
+.btn-tip { font-size: 12px; color: #a2a2a7; letter-spacing: 1px; }
 
 /* ==========================================
    单独修复 Safari 移动端图片重叠补丁（追加到最底部即可）
