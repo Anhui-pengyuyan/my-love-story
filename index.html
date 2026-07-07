@@ -8,68 +8,68 @@
 </head>
 <body>
 
-    <div class="password-overlay" id="passwordOverlay">
+    <section class="password-overlay" id="passwordOverlay" role="dialog" aria-labelledby="pwdTitle">
         <div class="password-box">
-            <h2>输入生日密码解锁空间</h2>
+            <h2 id="pwdTitle">输入吴文强老婆的生日密码解锁哦(0701)</h2>
             <input type="tel" id="pwdInput" maxlength="4" placeholder="4位数字" autocomplete="off">
-            <button id="pwdBtn">进入</button>
+            <button type="button" id="pwdBtn">进入</button>
         </div>
-    </div>
+    </section>
 
-    <div class="music-control" id="musicBtn">🎵</div>
+    <button type="button" class="music-control" id="musicBtn" aria-label="控制背景音乐">🎵</button>
     <audio id="bgMusic" src="audio/music.mp3" loop preload="auto"></audio>
 
-    <div class="scroll-container">
+    <main class="scroll-container">
         
         <section class="page" id="page1">
             <div class="content animate-item">
                 <div class="avatar-container">
-                    <img src="images/westie.jpg" alt="Westie" class="westie-img" id="westieDog">
+                    <img src="images/westie.jpg" alt="宠物西高地犬 Westie" class="westie-img" id="westieDog" width="200" height="200" fetchpriority="high" loading="eager" decoding="async">
                     <div class="secret-bubble" id="bubble">我一直都在。❤️</div>
                 </div>
                 <p class="subtitle">宝宝发现我的惊喜啦！！！</p>
                 <h1 class="main-title">生日快乐，这是我做的小网址。<br>会记录下我们好多好多的回忆。</h1>
                 <p class="quote">我生怕忘记任何一个甜蜜瞬间，<br>所以我想把它们记一辈子。</p>
-                <button class="next-btn" onclick="scrollToNext()">进入我们的故事</button>
+                <button type="button" class="next-btn" onclick="scrollToNext()">进入我们的故事</button>
             </div>
-            <div class="scroll-arrow">↓</div>
+            <div class="scroll-arrow" aria-hidden="true">↓</div>
         </section>
 
         <section class="page">
             <div class="content animate-item">
-                <div class="chat-img-wrapper">
-                    <img src="images/chat1.jpg" loading="lazy" alt="聊天记录" class="chat-img">
-                </div>
-                <div class="story-text">
+                <img src="images/chat1.jpg" alt="搞笑的最初聊天记录" class="chat-img chat-img-wrapper" width="300" height="500" fetchpriority="auto" loading="eager" decoding="async">
+                <article class="story-text">
                     <p>最开始先掏出我发现的最有意思的聊天记录</p>
-                    <p>必须把这个东西亮出来，哈哈哈哈，原来这么喜欢我哦？！嘻嘻</p>
+                    <p>必须把这个东西亮出来，哈哈港哈，原来这么喜欢我哦？！嘻嘻</p>
                     <p>这是我们最早的聊天记录，现在看笑死我了，你个大色懒子</p>
                     <p class="highlight">嘿嘿，那时候我还不知道，<br>这个大色懒子会成为我后来的全部故事。</p>
-                </div>
+                </article>
             </div>
-            <div class="scroll-arrow">↓</div>
+            <div class="scroll-arrow" aria-hidden="true">↓</div>
         </section>
 
         <section class="page">
             <div class="content animate-item">
-                <span class="chapter">第一章 · 故事开始</span>
-                <span class="date">2025年11月25日</span>
-                <div class="story-text">
+                <header>
+                    <h2 class="chapter">第一章 · 故事开始</h2>
+                    <time class="date" datetime="2025-11-25">2025年11月25日</time>
+                </header>
+                <article class="story-text">
                     <p>其实在我们真正见面之前，你已经出现过两次。</p>
                     <p>我发过想去大连的动态，你来找我。</p>
                     <p>后来我在朋友圈发北京，你又来找我。</p>
                     <p>但那时候我没有认真看清你。</p>
                     <p>甚至有点随意地觉得“应该也就那样”，所以没有见。</p>
                     <p>现在想想，其实不是你不够好，而是我当时还没准备好遇见一个会走进生活的人。</p>
-                </div>
+                </article>
             </div>
-            <div class="scroll-arrow">↓</div>
+            <div class="scroll-arrow" aria-hidden="true">↓</div>
         </section>
 
         <section class="page">
             <div class="content animate-item">
-                <span class="chapter">第二章 · 初见北京</span>
-                <div class="story-text">
+                <h2 class="chapter">第二章 · 初见北京</h2>
+                <article class="story-text">
                     <p>真正见面是在北京。</p>
                     <p>倒茶、充电宝、递洗面奶……</p>
                     <p>你那种很自然的照顾，不是讨好，是习惯。</p>
@@ -78,284 +78,391 @@
                     <p style="margin-top: 15px;">那一刻我突然意识到：</p>
                     <p>真的会有人，在极其认真地看过我的生活。</p>
                     <p class="highlight" style="margin-top: 20px;">“这种在乎，比任何喜欢都更快让我放下防备。”</p>
-                </div>
+                </article>
             </div>
-            <div class="scroll-arrow">↓</div>
+            <div class="scroll-arrow" aria-hidden="true">↓</div>
         </section>
 
         <section class="page">
             <div class="content animate-item">
-                <span class="chapter">第三章 · 慢慢靠近</span>
-                <div class="story-text">
+                <h2 class="chapter">第三章 · 慢慢靠近</h2>
+                <article class="story-text">
                     <p>北京之后，我们开始每天聊天。</p>
                     <p>你不太会表达喜欢，我甚至觉得你没那么在意。</p>
                     <p>直到那天早上你发了一句：“早哦。”</p>
-                </div>
-                <div class="chat-img-wrapper" style="margin: 15px auto; width: 75%;">
-                    <img src="images/morning.jpg" loading="lazy" alt="慢慢靠近的碎片" class="chat-img">
-                </div>
-                <div class="story-text">
+                </article>
+                <img src="images/morning.jpg" alt="慢慢靠近的聊天碎片" class="chat-img chat-img-wrapper" style="margin: 15px auto; width: 75%;" width="300" height="200" fetchpriority="low" loading="lazy" decoding="async">
+                <article class="story-text">
                     <p>很普通两个字，我却突然意识到你其实一直在。</p>
                     <p>后来你说喜欢我，想再抱抱我，好温暖……</p>
                     <p class="highlight" style="margin-top: 10px;">“那是我第一次感觉到，我是正在被你坚定选择着的。”</p>
-                </div>
+                </article>
             </div>
-            <div class="scroll-arrow">↓</div>
+            <div class="scroll-arrow" aria-hidden="true">↓</div>
         </section>
 
         <section class="page">
             <div class="content animate-item">
-                <span class="chapter">第四章 · 关系的界限</span>
-                <div class="story-text">
+                <h2 class="chapter">第四章 · 关系界限</h2>
+                <article class="story-text">
                     <p>你第一次叫我“老公”的时候，我其实愣了一下。</p>
                     <p>没有铺垫，没有仪式感，但那一刻我记得很清楚。</p>
-                </div>
+                </article>
                 <div class="dual-photo-container">
-                    <div class="mini-photo-wrapper"><img src="images/april1.jpg" loading="lazy" alt="那个晚上的称呼"></div>
-                    <div class="mini-photo-wrapper"><img src="images/april2.jpg" loading="lazy" alt="外卖订单截图"></div>
+                    <img src="images/april1.jpg" alt="那个晚上的称呼" class="mini-photo-wrapper" width="180" height="240" fetchpriority="low" loading="lazy" decoding="async">
+                    <img src="images/april2.jpg" alt="贴心的外卖订单截图" class="mini-photo-wrapper" width="180" height="240" fetchpriority="low" loading="lazy" decoding="async">
                 </div>
-                <div class="story-text">
+                <article class="story-text">
                     <p>后来你工作饭局，我给你点了豆浆、蜂蜜水、电解质水……</p>
                     <p>我不知道你需要什么，就只能把能想到的都给你。</p>
                     <p class="highlight" style="margin-top: 10px;">“那是你第一次，让我认真参与到你的生活里。”</p>
-                </div>
+                </article>
             </div>
-            <div class="scroll-arrow">↓</div>
+            <div class="scroll-arrow" aria-hidden="true">↓</div>
         </section>
 
         <section class="page">
             <div class="content animate-item">
-                <span class="chapter">第五章 · 第一次认真吵架</span>
-                <span class="date">2026年5月9日</span>
-                <div class="story-text">
+                <header>
+                    <h2 class="chapter">第五章 · 第一次认真吵架</h2>
+                    <time class="date" datetime="2026-05-09">2026年5月9日</time>
+                </header>
+                <article class="story-text">
                     <p>距离见面还有一周。那一天，我过得特别糟糕。</p>
                     <p>奶茶打翻在床，实验课拖堂，上午吐了，整个人疲惫不堪。</p>
                     <p>我等了你一整晚，换来的却是一条女团视频。</p>
                     <p class="highlight" style="margin-top: 5px;">“要不别见了。” ——其实我只是想让你多看看我。</p>
-                </div>
+                </article>
                 <div class="triple-photo-container">
-                    <div class="micro-photo-wrapper">
-                        <img src="images/may1.jpg" loading="lazy" alt="糟糕的一天">
-                        <span class="photo-tag">提出别见</span>
-                    </div>
-                    <div class="micro-photo-wrapper">
-                        <img src="images/may2.jpg" loading="lazy" alt="委屈与安慰">
-                        <span class="photo-tag">电话安慰</span>
-                    </div>
-                    <div class="micro-photo-wrapper">
-                        <img src="images/may3.jpg" loading="lazy" alt="朋友圈的一分钟">
-                        <span class="photo-tag">和好如初</span>
-                    </div>
+                    <figure class="micro-photo-wrapper">
+                        <img src="images/may1.jpg" alt="聊天记录：提出别见" width="110" height="150" fetchpriority="low" loading="lazy" decoding="async">
+                        <figcaption class="photo-tag">提出别见</figcaption>
+                    </figure>
+                    <figure class="micro-photo-wrapper">
+                        <img src="images/may2.jpg" alt="聊天记录：电话安慰" width="110" height="150" fetchpriority="low" loading="lazy" decoding="async">
+                        <figcaption class="photo-tag">电话安慰</figcaption>
+                    </figure>
+                    <figure class="micro-photo-wrapper">
+                        <img src="images/may3.jpg" alt="朋友圈截图：和好如初" width="110" height="150" fetchpriority="low" loading="lazy" decoding="async">
+                        <figcaption class="photo-tag">和好如初</figcaption>
+                    </figure>
                 </div>
-                <div class="story-text" style="margin-top: 10px;">
+                <article class="story-text" style="margin-top: 10px;">
                     <p>我嘴硬让你发朋友圈：“吴文强是我真主。”结果你当了真。</p>
                     <p>后来发现，那不是一次失败的争吵，而是我们在笨拙地宣告：</p>
                     <p class="highlight" style="margin-top: 10px;">“其实，我很害怕失去你。”</p>
-                </div>
+                </article>
             </div>
-            <div class="scroll-arrow">↓</div>
+            <div class="scroll-arrow" aria-hidden="true">↓</div>
         </section>
 
         <section class="page">
             <div class="content animate-item">
-                <span class="chapter">第六章 · 长春再见</span>
-                <span class="date">2026年5月16日 - 17日</span>
-                <div class="story-text">
+                <header>
+                    <h2 class="chapter">第六章 · 长春再见</h2>
+                    <time class="date" datetime="2026-05-16/2026-05-17">2026年5月16日 - 17日</time>
+                </header>
+                <article class="story-text">
                     <p>你真的来了。这是第一次，你来到我的城市。</p>
                     <p>净月潭喂驯鹿、伪满皇宫……一路上你总喜欢和陌生人聊天。</p>
                     <p>你特别开朗，特别有生命力。我站在旁边，觉得特别幸福。</p>
-                </div>
+                </article>
                 <div class="jiugongge-container">
-                    <div class="grid-photo-item"><img src="images/cc1.jpg" loading="lazy" alt="1"></div>
-                    <div class="grid-photo-item"><img src="images/cc2.jpg" loading="lazy" alt="2"></div>
-                    <div class="grid-photo-item"><img src="images/cc3.jpg" loading="lazy" alt="3"></div>
-                    <div class="grid-photo-item"><img src="images/cc4.jpg" loading="lazy" alt="4"></div>
-                    <div class="grid-photo-item"><img src="images/cc5.jpg" loading="lazy" alt="5"></div>
-                    <div class="grid-photo-item"><img src="images/cc6.jpg" loading="lazy" alt="6"></div>
-                    <div class="grid-photo-item"><img src="images/cc7.jpg" loading="lazy" alt="7"></div>
-                    <div class="grid-photo-item"><img src="images/cc8.jpg" loading="lazy" alt="8"></div>
-                    <div class="grid-photo-item"><img src="images/cc9.jpg" loading="lazy" alt="9"></div>
+                    <img src="images/cc1.jpg" alt="长春甜蜜合影 1" class="grid-photo-item" width="120" height="120" fetchpriority="low" loading="lazy" decoding="async">
+                    <img src="images/cc2.jpg" alt="长春风景与我们 2" class="grid-photo-item" width="120" height="120" fetchpriority="low" loading="lazy" decoding="async">
+                    <img src="images/cc3.jpg" alt="长春回忆碎片 3" class="grid-photo-item" width="120" height="120" fetchpriority="low" loading="lazy" decoding="async">
+                    <img src="images/cc4.jpg" alt="长春回忆碎片 4" class="grid-photo-item" width="120" height="120" fetchpriority="low" loading="lazy" decoding="async">
+                    <img src="images/cc5.jpg" alt="长春回忆碎片 5" class="grid-photo-item" width="120" height="120" fetchpriority="low" loading="lazy" decoding="async">
+                    <img src="images/cc6.jpg" alt="长春回忆碎片 6" class="grid-photo-item" width="120" height="120" fetchpriority="low" loading="lazy" decoding="async">
+                    <img src="images/cc7.jpg" alt="长春回忆碎片 7" class="grid-photo-item" width="120" height="120" fetchpriority="low" loading="lazy" decoding="async">
+                    <img src="images/cc8.jpg" alt="长春回忆碎片 8" class="grid-photo-item" width="120" height="120" fetchpriority="low" loading="lazy" decoding="async">
+                    <img src="images/cc9.jpg" alt="长春回忆碎片 9" class="grid-photo-item" width="120" height="120" fetchpriority="low" loading="lazy" decoding="async">
                 </div>
-                <div class="story-text">
+                <article class="story-text">
                     <p>见你前我一直紧张，觉得你未必真的那么喜欢我，不敢太主动。</p>
                     <p class="highlight" style="margin-top: 5px;">“后来你主动牵我、亲我。那一刻，我终于放心了。”</p>
-                </div>
+                </article>
             </div>
-            <div class="scroll-arrow">↓</div>
+            <div class="scroll-arrow" aria-hidden="true">↓</div>
         </section>
 
         <section class="page">
             <div class="content animate-item">
-                <span class="chapter">第七章 · 舍不得分别</span>
-                <span class="date">2026年5月17日</span>
-                <div class="story-text">
+                <header>
+                    <h2 class="chapter">酒店小插曲</h2>
+                    <span class="date">我喜欢你给我的安全感</span>
+                </header>
+                <article class="story-text">
+                    <p>我一直记得后来我们一起去酒店办理入住的小插曲。</p>
+                    <p>因为房间是闲鱼预订的，前台发现入住信息和我的名字、手机号对不上，便询问起了具体情况。</p>
+                    <p>当时我其实有点尴尬。这种事情并不是什么大事，只是站在前台被一直询问的时候，总会有一点不自在。</p>
+                    <p>就在我还想着该怎么解释的时候，你已经很自然地接过了话。</p>
+                    <p>你没有把问题留给我，也没有让我一个人站在那里解释，而是很平静地和前台沟通，说是朋友帮忙预订的，把事情处理得很自然。</p>
+                    <p>我就在旁边静静地看着你。</p>
+                    <p>那一刻，我忽然觉得，你真的很有担当。</p>
+                    <p>不是因为这件事情有多难解决，而是因为你下意识站出来的样子，让我觉得很安心。</p>
+                    <p>真正让我心动的，从来不是惊天动地的浪漫。</p>
+                    <p>而是在这些很普通、很细微的时刻，你总会习惯性地替我分担一点，让我知道，有些事情不用一直一个人面对。</p>
+                    <p>那一瞬间，我突然觉得，你身上有一种很特别的安全感。</p>
+                    <p>像哥哥一样成熟，可靠，遇到事情不会慌，而是会先想着怎么解决。</p>
+                    <p class="highlight" style="margin-top: 10px;">后来回想起来，我才发现，原来真正让我越来越喜欢你的，从来都不是一句句情话，而是这些你自己都未必会记得的小细节。</p>
+                </article>
+            </div>
+            <div class="scroll-arrow" aria-hidden="true">↓</div>
+        </section>
+
+        <section class="page">
+            <div class="content animate-item">
+                <header>
+                    <h2 class="chapter">电影小插曲</h2>
+                    <span class="date">那个让我更加确定心意的瞬间</span>
+                </header>
+                <article class="story-text">
+                    <p>后来，我一直在想，我们之间有没有哪一个瞬间，是真正让我觉得—— <span class="highlight">「我没有喜欢错人。」</span></p>
+                    <p>我想，应该就是那次你来长春的时候。</p>
+                    <p>那天，我带你去看了电影《给阿嫲的情书》。我其实不知道你会不会喜欢，也不知道它会不会触动你。只是觉得，这是一部很温柔的电影，想和你一起看。</p>
+                    <p>电影结束后，我转头看向你，却发现你的眼睛已经哭得通红。</p>
+                    <p>你没有说太多话，只是一真默默擦着眼泪。那不是一瞬间的情绪，而是很久很久都没有停下来。</p>
+                    <p>我忽然觉得，原来你比我想象中还要柔软。</p>
+                    <p>你会因为亲情而落泪，会因为一个故事而久久不能平静，也会因为一只小动物的遭遇而心疼很久。</p>
+                    <p>我一直觉得，真正善良的人，不是嘴上说自己善良，而是会因为别人的幸福、遗憾和生命而感同感受。</p>
+                    <p>那一刻，我忽然觉得，我真的没有喜欢错人。</p>
+                    <p>因为我喜欢的人，是一个会认真爱这个世界的人。</p>
+                    <p>这样的你，也让我忍不住想对你好一点，再好一点。</p>
+                    <p>我想照顾你的情绪，照顾你的生活，在你开心的时候陪你笑，在你难过的时候陪着你。</p>
+                    <p class="highlight" style="margin-top: 10px;">如果可以的话，我希望未来很多很多年，都还能这样牵着你的手，陪你一起看电影，一起笑，也一起流眼泪。</p>
+                </article>
+                <figure class="chat-img-wrapper" style="margin: 15px auto; width: 75%;">
+                    <img src="images/movie_ticket.jpg" alt="电影《给阿嫲的情书》门票截图" class="chat-img" width="300" height="150" fetchpriority="low" loading="lazy" decoding="async">
+                </figure>
+            </div>
+            <div class="scroll-arrow" aria-hidden="true">↓</div>
+        </section>
+
+        <section class="page">
+            <div class="content animate-item">
+                <header>
+                    <h2 class="chapter">第七章 · 舍不得分别</h2>
+                    <time class="date" datetime="2026-05-17">2026年5月17日</time>
+                </header>
+                <article class="story-text">
                     <p>我们一起去了高铁站，吃了酸菜煎肉。东西很好吃，可我却一点提不起兴趣。</p>
                     <p>进站时特别想亲你，可人很多，我知道你容易害羞，我一直忍着。</p>
-                </div>
+                </article>
                 <div class="quad-photo-container">
-                    <div class="quad-photo-item"><img src="images/part1.jpg" loading="lazy" alt="1"></div>
-                    <div class="quad-photo-item"><img src="images/part2.jpg" loading="lazy" alt="2"></div>
-                    <div class="quad-photo-item"><img src="images/part3.jpg" loading="lazy" alt="3"></div>
-                    <div class="quad-photo-item"><img src="images/part4.jpg" loading="lazy" alt="4"></div>
+                    <img src="images/part1.jpg" alt="离别前煎肉 1" class="quad-photo-item" width="160" height="160" fetchpriority="low" loading="lazy" decoding="async">
+                    <img src="images/part2.jpg" alt="高铁站进站 2" class="quad-photo-item" width="160" height="160" fetchpriority="low" loading="lazy" decoding="async">
+                    <img src="images/part3.jpg" alt="分别的站台 3" class="quad-photo-item" width="160" height="160" fetchpriority="low" loading="lazy" decoding="async">
+                    <img src="images/part4.jpg" alt="为你订的花 4" class="quad-photo-item" width="160" height="160" fetchpriority="low" loading="lazy" decoding="async">
                 </div>
-                <div class="story-text" style="margin-top: 10px;">
+                <article class="story-text" style="margin-top: 10px;">
                     <p>独自坐上地铁才发现，你走后心里空了一块。后来我越来越想你。</p>
                     <p>于是立马给你订了花。不是为了仪式感，只是想说：</p>
                     <p class="highlight" style="margin-top: 10px;">“谢谢你来到我的生活，谢谢你来认真爱我。”</p>
-                </div>
+                </article>
             </div>
-            <div class="scroll-arrow">↓</div>
+            <div class="scroll-arrow" aria-hidden="true">↓</div>
         </section>
 
         <section class="page">
             <div class="content animate-item">
-                <span class="chapter">第八章 · 你的未来里有我</span>
-                <span class="date">2026年5月18日</span>
-                <div class="story-text">
+                <header>
+                    <h2 class="chapter">第八章 · 你的未来里有我</h2>
+                    <time class="date" datetime="2026-05-18">2026年5月18日</time>
+                </header>
+                <article class="story-text">
                     <p>你给我打电话，说以前的主管希望你回腾讯。</p>
                     <p>我们聊了很多，聊工作、聊城市、聊未来。</p>
-                </div>
-                <div class="chat-img-wrapper" style="margin: 15px auto; width: 80%;">
-                    <img src="images/future.jpg" loading="lazy" alt="未来的电话" class="chat-img">
-                </div>
-                <div class="story-text">
+                </article>
+                <img src="images/future.jpg" alt="探讨未来的通话记录" class="chat-img chat-img-wrapper" style="margin: 15px auto; width: 80%;" width="300" height="400" fetchpriority="low" loading="lazy" decoding="async">
+                <article class="story-text">
                     <p>后来你说：“如果去了深圳，以后我们就很难见了。”</p>
                     <p class="highlight" style="margin-top: 10px;">“那一刻我第一次意识到，有人规划未来的时候，已经把我放进去了。”</p>
-                </div>
+                </article>
             </div>
-            <div class="scroll-arrow">↓</div>
+            <div class="scroll-arrow" aria-hidden="true">↓</div>
         </section>
 
         <section class="page">
             <div class="content animate-item">
-                <span class="chapter">第九章 · 贵阳梦境（上）</span>
-                <span class="date">2026年5月21日 - 25日</span>
-                <div class="story-text">
+                <header>
+                    <h2 class="chapter">第九章 · 贵阳梦境（上）</h2>
+                    <time class="date" datetime="2026-05-21/2026-05-25">2026年5月21日 - 25日</time>
+                </header>
+                <article class="story-text">
                     <p>我飞了两千多公里，去你培训的城市，贵阳。</p>
                     <p>在咖啡馆等你时，你悄咪咪推门进来，我们对视着，然后一起傻笑。</p>
                     <p>因为东西太多怕带回去被门卫看到尴尬，你主动去找地下服装店姐姐要了个大袋子，把所有东西打包好。</p>
-                </div>
+                </article>
                 <div class="quad-photo-container">
-                    <div class="quad-photo-item"><img src="images/gy1.jpg" loading="lazy" alt="1"></div>
-                    <div class="quad-photo-item"><img src="images/gy2.jpg" loading="lazy" alt="2"></div>
-                    <div class="quad-photo-item"><img src="images/gy3.jpg" loading="lazy" alt="3"></div>
-                    <div class="quad-photo-item"><img src="images/gy4.jpg" loading="lazy" alt="4"></div>
+                    <img src="images/gy1.jpg" alt="贵阳相聚 1" class="quad-photo-item" width="160" height="160" fetchpriority="low" loading="lazy" decoding="async">
+                    <img src="images/gy2.jpg" alt="咖啡馆偶遇 2" class="quad-photo-item" width="160" height="160" fetchpriority="low" loading="lazy" decoding="async">
+                    <img src="images/gy3.jpg" alt="打包的大袋子 3" class="quad-photo-item" width="160" height="160" fetchpriority="low" loading="lazy" decoding="async">
+                    <img src="images/gy4.jpg" alt="白宫合合影 4" class="quad-photo-item" width="160" height="160" fetchpriority="low" loading="lazy" decoding="async">
                 </div>
-                <div class="story-text" style="margin-top: 10px;">
+                <article class="story-text" style="margin-top: 10px;">
                     <p>然后去了白宫拍照。你拍照技术不太好，但真的很认真。</p>
                     <p class="highlight" style="margin-top: 10px;">“晚上提着袋子走回住处，夜风很轻，路上只有我们两个人。”</p>
-                </div>
+                </article>
             </div>
-            <div class="scroll-arrow">↓</div>
+            <div class="scroll-arrow" aria-hidden="true">↓</div>
         </section>
 
         <section class="page">
             <div class="content animate-item">
-                <span class="chapter">第十章 · 贵阳梦境（下）</span>
-                <div class="story-text">
-                    <p>后来几天，你一下课就打车来找我。我们吃路边摊、贵州菜、酸汤牛肉、烙锅。</p>
+                <h2 class="chapter">第十章 · 贵阳梦境（下）</h2>
+                <article class="story-text">
+                    <p>Later几天，你一下课就打车来找我。我们吃路边摊、贵州菜、酸汤牛肉、烙锅。</p>
                     <p>你总说“这个好吃，你尝尝”，然后把第一口夹到我碗里。</p>
                     <p>走的那天你其实已经很困了。吃完饭在回家的车上，你靠着椅背就睡着了。回到酒店，你躺在床上又睡了过去。但你还是撑着陪我到凌晨四点，一定要送我上车。</p>
-                </div>
+                </article>
                 <div class="quad-photo-container">
-                    <div class="quad-photo-item"><img src="images/gy5.jpg" loading="lazy" alt="5"></div>
-                    <div class="quad-photo-item"><img src="images/gy6.jpg" loading="lazy" alt="6"></div>
-                    <div class="quad-photo-item"><img src="images/gy7.jpg" loading="lazy" alt="7"></div>
-                    <div class="quad-photo-item"><img src="images/gy8.jpg" loading="lazy" alt="8"></div>
+                    <img src="images/gy5.jpg" alt="贵阳美食 5" class="quad-photo-item" width="160" height="160" fetchpriority="low" loading="lazy" decoding="async">
+                    <img src="images/gy6.jpg" alt="疲惫的小睡 6" class="quad-photo-item" width="160" height="160" fetchpriority="low" loading="lazy" decoding="async">
+                    <img src="images/gy7.jpg" alt="凌晨四点的陪伴 7" class="quad-photo-item" width="160" height="160" fetchpriority="low" loading="lazy" decoding="async">
+                    <img src="images/gy8.jpg" alt="分别的车站门口 8" class="quad-photo-item" width="160" height="160" fetchpriority="low" loading="lazy" decoding="async">
                 </div>
-                <div class="story-text" style="margin-top: 10px;">
+                <article class="story-text" style="margin-top: 10px;">
                     <p>我抱了你一下，我抱得很紧，但什么都说不出口。我上车之后，透过车窗看到你站在门口，没走。</p>
                     <p>车子慢慢开远，你还站在那里，一直看着我，直到拐弯。</p>
                     <p class="highlight" style="margin-top: 10px;">“贵阳那几天，像一场梦。一个很短的、很甜地、我会记很久的梦。”</p>
-                </div>
+                </article>
             </div>
-            <div class="scroll-arrow">THE END</div>
+            <div class="scroll-arrow" aria-hidden="true">THE END</div>
         </section>
 
         <section class="page">
             <div class="content animate-item">
-                <span class="chapter">第十一章 · 我们的专属密语</span>
-                <span class="date">2026年5月30日</span>
-                <div class="story-text">
+                <header>
+                    <h2 class="chapter">第十一章 · 异地的夜晚，我们学会了怎么爱</h2>
+                    <time class="date" datetime="2026-05-27">2026年5月27日</time>
+                </header>
+                <article class="story-text">
+                    <p>异地以后，我慢慢发现，喜欢一个人不仅仅是分享快乐。</p>
+                    <p>更多时候，是学着去接住对方那些不开心的时刻。</p>
+                    <p>那天，你刚从贵阳回来。</p>
+                    <p>晚上应酬结束后，你给我发来了语音条。</p>
+                    <p>点开语音的时候，我就感觉到你和平时不一样。</p>
+                    <p>平时的你总是很乐观，总喜欢逗我开心，好像什么事情都能轻松解决。</p>
+                    <p>可那天，你声音很低，甚至带着明显的哭泣。</p>
+                    <p>你告诉我，这次应酬遇到了一些特别糟糕的事情。</p>
+                    <p>被饭店老板骚扰，被客户骚扰，甚至还因此受了伤。</p>
+                    <p>那些我平时只会在新闻里看到的事情，突然真实地发生在了你的身上。</p>
+                    <p>我第一次听见你用那样委屈的语气和我说话。</p>
+                    <p>后来，你哭了。</p>
+                    <p>隔着一千多公里，我什么都做不了。</p>
+                    <p>我不能抱抱你，也不能陪在你身边。</p>
+                    <p>我只能握着手机，一遍一遍听你说那些委屈。</p>
+                    <p>那天晚上，我特别心疼你。</p>
+                    <p>我突然意识到，北京的生活、工作和应酬，并没有我想象得那么轻松。</p>
+                    <p>原来你也会遇到让自己难受的事情。</p>
+                    <p>原来你也会有撑不住的时候。</p>
+                    <p>也是从那一天开始，我发现自己好像更在乎你了。</p>
+                    <p>不是因为你对我有多好。</p>
+                    <p>而是因为你愿意让我看见你的脆弱。</p>
+                    <p>愿意在最委屈的时候，跟我倾诉。</p>
+                    <p>愿意把那些不开心、那些眼泪、那些说不出口的话，都告诉我。</p>
+                    <p>后来我开始学着，在你说「好累」的时候，多问一句：</p>
+                    <p class="highlight">“我随时都在！”</p>
+                    <p class="highlight" style="margin-top: 10px;">
+                        谢谢你愿意把最真实的自己交给我。<br>
+                        以后开心的时候陪你笑，难过的时候，我也会一直陪着你。
+                    </p>
+                </article>
+                <div class="dual-photo-container">
+                    <img src="images/yidi-night1.jpg" alt="那天晚上的回忆图片1" class="mini-photo-wrapper" width="180" height="240" fetchpriority="low" loading="lazy" decoding="async">
+                    <img src="images/yidi-night2.jpg" alt="那天晚上的回忆图片2" class="mini-photo-wrapper" width="180" height="240" fetchpriority="low" loading="lazy" decoding="async">
+                </div>
+            </div>
+            <div class="scroll-arrow" aria-hidden="true">↓</div>
+        </section>
+
+        <section class="page">
+            <div class="content animate-item">
+                <header>
+                    <h2 class="chapter">第十二章 · 我们的专属密语</h2>
+                    <time class="date" datetime="2026-05-30">2026年5月30日</time>
+                </header>
+                <article class="story-text">
                     <p>你给我P了一个小芒果，因为我发给你的主播锐评视频里，主播一直说我是个“帅气的小芒果”。</p>
                     <p>然后你就一直拿这个逗我。我气死了，但又觉得好笑。</p>
-                </div>
-                <div class="chat-img-wrapper" style="margin: 15px auto; width: 75%;">
-                    <img src="images/mango.jpg" loading="lazy" alt="专属密语小芒果" class="chat-img">
-                </div>
-                <div class="story-text">
+                </article>
+                <img src="images/mango.jpg" alt="专属密语小芒果表情包" class="chat-img chat-img-wrapper" style="margin: 15px auto; width: 75%;" width="200" height="200" fetchpriority="low" loading="lazy" decoding="async">
+                <article class="story-text">
                     <p>你说，这是属于我们俩的专属密语。后来每次发那个芒果表情，我就知道你在叫我。</p>
                     <p class="highlight" style="margin-top: 10px;">“不是什么大事。我觉得，能被喜欢人用可爱的方式记住，超级幸福！”</p>
-                </div>
+                </article>
             </div>
-            <div class="scroll-arrow">↓</div>
+            <div class="scroll-arrow" aria-hidden="true">↓</div>
         </section>
 
         <section class="page">
             <div class="content animate-item">
-                <span class="chapter">第十二章 · 刚刚看懂的你</span>
-                <span class="date">2026年7月1日 · 凌晨</span>
-                <div class="story-text">
+                <header>
+                    <h2 class="chapter">第十三章 · 刚刚看懂的你</h2>
+                    <time class="date" datetime="2026-07-01T03:00">2026年7月1日 · 凌晨</time>
+                </header>
+                <article class="story-text">
                     <p>有时候我会觉得，我们之间的爱好像不是那种很张扬的样子。</p>
                     <p>我总是很容易被情绪带着走，会胡思乱想，也会不安地去确认你是不是还在意我。但你好像不是这样的人，你不太说很多话，只是很安静地做很多事情。</p>
                     <p>家教结束回宿舍，白天刚说不过生日了，深夜却突然接到外卖电话。当我懵懵地站在取外卖的栅栏前，看到你悄悄准备的蛋糕时，我整个人都傻了。</p>
-                </div>
+                </article>
                 <div class="dual-photo-container">
-                    <div class="mini-photo-wrapper"><img src="images/birthday_surprise1.jpg" loading="lazy" alt="1"></div>
-                    <div class="mini-photo-wrapper"><img src="images/birthday_surprise2.jpg" loading="lazy" alt="2"></div>
+                    <img src="images/birthday_surprise1.jpg" alt="深夜的生日惊喜蛋糕" class="mini-photo-wrapper" width="180" height="240" fetchpriority="low" loading="lazy" decoding="async">
+                    <img src="images/birthday_surprise2.jpg" alt="特意收集的柴犬礼物" class="mini-photo-wrapper" width="180" height="240" fetchpriority="low" loading="lazy" decoding="async">
                 </div>
-                <div class="story-text">
+                <article class="story-text">
                     <p>清补凉、衣服、胶片相机，还有那个小柴犬……我特意去搜聊天记录，连我自己都不记得随口说过，你居然一直记到了现在。看到抱枕那一刻，我心里一下子特别酸。</p>
                     <p>这些东西不是临时起意，更像是你在很早之前就开始一点一点收集的答案。你把我说过的每一句话，都放进了你的准备里。原来你一直都记得，一直都在做，原来你只是没有说。</p>
                     <p class="highlight" style="margin-top: 12px; font-size: 13px; line-height: 1.6;">“不是所有的爱都需要被提前说出来，有些爱是已经发生了，只是我刚刚才看到。”</p>
                     <p style="margin-top: 8px;">这个生日对我来说不只是一个生日。它更像是一次确认——确认我说过的话被认真听见，确认我不是一个随口被回应的人，确认有人在用自己的方式，把我放在心上。</p>
                     <p class="highlight" style="margin-top: 8px; font-size: 14px;">“谢谢你，老婆。也谢谢那个慢慢开始看懂你的我。”</p>
-                </div>
+                </article>
             </div>
-            <div class="scroll-arrow">↓</div>
+            <div class="scroll-arrow" aria-hidden="true">↓</div>
         </section>
 
         <section class="page">
             <div class="content animate-item">
-                <span class="chapter">最终章 · 成为生活</span>
-                <div class="story-text">
+                <h2 class="chapter">最终章 · 成为生活</h2>
+                <article class="story-text">
                     <p>后来我越来越觉得，我们的故事，不像电影里的轰轰烈烈，反而像生活本身。</p>
                     <p>不是因为一句“我爱你”，而是因为那些别人觉得微不足道的小事情：</p>
-                </div>
+                </article>
                 <div class="mosaic-grid-container">
-                    <div class="mosaic-item"><img src="images/final1.jpg" loading="lazy" alt="1"></div>
-                    <div class="mosaic-item"><img src="images/final2.jpg" loading="lazy" alt="2"></div>
-                    <div class="mosaic-item"><img src="images/final3.jpg" loading="lazy" alt="3"></div>
-                    <div class="mosaic-item"><img src="images/final4.jpg" loading="lazy" alt="4"></div>
-                    <div class="mosaic-item"><img src="images/final5.jpg" loading="lazy" alt="5"></div>
-                    <div class="mosaic-item"><img src="images/final6.jpg" loading="lazy" alt="6"></div>
-                    <div class="mosaic-item"><img src="images/final7.jpg" loading="lazy" alt="7"></div>
-                    <div class="mosaic-item"><img src="images/final8.jpg" loading="lazy" alt="8"></div>
-                    <div class="mosaic-item"><img src="images/final9.jpg" loading="lazy" alt="9"></div>
-                    <div class="mosaic-item"><img src="images/final10.jpg" loading="lazy" alt="10"></div>
-                    <div class="mosaic-item"><img src="images/final11.jpg" loading="lazy" alt="11"></div>
-                    <div class="mosaic-item"><img src="images/final12.jpg" loading="lazy" alt="12"></div>
+                    <img src="images/final1.jpg" alt="生活点滴 1" class="mosaic-item" width="100" height="100" fetchpriority="low" loading="lazy" decoding="async">
+                    <img src="images/final2.jpg" alt="生活点滴 2" class="mosaic-item" width="100" height="100" fetchpriority="low" loading="lazy" decoding="async">
+                    <img src="images/final3.jpg" alt="生活点滴 3" class="mosaic-item" width="100" height="100" fetchpriority="low" loading="lazy" decoding="async">
+                    <img src="images/final4.jpg" alt="生活点滴 4" class="mosaic-item" width="100" height="100" fetchpriority="low" loading="lazy" decoding="async">
+                    <img src="images/final5.jpg" alt="生活点滴 5" class="mosaic-item" width="100" height="100" fetchpriority="low" loading="lazy" decoding="async">
+                    <img src="images/final6.jpg" alt="生活点滴 6" class="mosaic-item" width="100" height="100" fetchpriority="low" loading="lazy" decoding="async">
+                    <img src="images/final7.jpg" alt="生活点滴 7" class="mosaic-item" width="100" height="100" fetchpriority="low" loading="lazy" decoding="async">
+                    <img src="images/final8.jpg" alt="生活点滴 8" class="mosaic-item" width="100" height="100" fetchpriority="low" loading="lazy" decoding="async">
+                    <img src="images/final9.jpg" alt="生活点滴 9" class="mosaic-item" width="100" height="100" fetchpriority="low" loading="lazy" decoding="async">
+                    <img src="images/final10.jpg" alt="生活点滴 10" class="mosaic-item" width="100" height="100" fetchpriority="low" loading="lazy" decoding="async">
+                    <img src="images/final11.jpg" alt="生活点滴 11" class="mosaic-item" width="100" height="100" fetchpriority="low" loading="lazy" decoding="async">
+                    <img src="images/final12.jpg" alt="生活点滴 12" class="mosaic-item" width="100" height="100" fetchpriority="low" loading="lazy" decoding="async">
                 </div>
                 <div class="story-text bullet-list-text">
                     <p>一杯热水 · 一次拥抱 · 一句“早哦”</p>
                     <p>一次突然回头的吻 · 一束花 · 一封情书</p>
                     <p>一次高铁站的分别 · 一次深夜的报备</p>
                     <p>一次未来规划里留给我的位置</p>
-                    <p>一次困到睁不开眼却坚持送你上车的凌晨</p>
+                    <p>一次困到睁不开眼却坚持送我上车的凌晨</p>
                     <p>一次站在路口目送我直到车子拐弯的背影</p>
                 </div>
-                <div class="story-text" style="margin-top: 10px;">
+                <article class="story-text" style="margin-top: 10px;">
                     <p>还有很多很多……慢慢拼成了现在的我们。</p>
                     <p class="highlight" style="font-size: 16px; margin-top: 12px; letter-spacing: 1px;">“原来，我们会成为彼此的生活。”</p>
-                </div>
+                </article>
             </div>
-            <div class="scroll-arrow" style="font-size: 11px; letter-spacing: 3px; color: #666;">✨ TO BE CONTINUED...</div>
+            <div class="scroll-arrow" style="font-size: 11px; letter-spacing: 3px; color: #666;" aria-hidden="true">✨ TO BE CONTINUED...</div>
         </section>
 
         <section class="page">
             <div class="content animate-item epilogue-page">
-                <span class="chapter">后记 · 还没写完的部分</span>
-                <div class="story-text epilogue-text">
+                <h2 class="chapter">后记 · 还没写完的部分</h2>
+                <article class="story-text epilogue-text">
                     <p>写到这里的时候，我们还在一起。</p>
                     <p>你还在北京，我还在长春。</p>
                     <p>你还喜欢 aespa，还喜欢宁艺卓。</p>
@@ -364,8 +471,8 @@
                     <p>还不完美，还在吵架，还会内耗……</p>
                     <p>还会在凌晨三点给对方发消息说：“我还没睡。”</p>
                     <p class="highlight-soft">但没关系。这本回忆录，我们还可以写很久。</p>
-                </div>
-                <div class="story-text dynamic-echo-text">
+                </article>
+                <article class="story-text dynamic-echo-text">
                     <p>如果有一天，你调去了深圳，或者我毕业去了上海 —— 那我们就再开一个章节。</p>
                     <p>叫《后来的我们》，或者《终于不用异地了》。到时候你来起名字！</p>
                     <div class="echo-box">
@@ -374,48 +481,123 @@
                         <p>“你才是那个 在朋友圈挂了我一分钟，但是害臊 的人。”</p>
                     </div>
                     <p class="my-answer">而我是那个，愿意把这些小事，一字一句记下来的人。</p>
-                </div>
-                <div class="story-text" style="margin-top: 15px;">
+                </article>
+                <article class="story-text" style="margin-top: 15px;">
                     <p class="final-sentence">因为我们都在认真，成为彼此的生活。</p>
-                </div>
+                </article>
             </div>
-            <div class="scroll-arrow final-heart">♥</div>
+            <div class="scroll-arrow final-heart" aria-hidden="true">♥</div>
         </section>
 
-<section class="page birthday-theme-bg long-page">
-    <canvas id="fireworksCanvas" style="position:absolute; top:0; left:0; width:100%; height:100%; pointer-events:none; z-index:1;"></canvas>
+        <section class="page birthday-theme-bg long-page">
+            <canvas id="fireworksCanvas" style="position:absolute; top:0; left:0; width:100%; height:100%; pointer-events:none; z-index:1;"></canvas>
 
-    <div class="content animate-item birthday-page" style="position:relative; z-index:2;">
-        <span class="birthday-title">HAPPY BIRTHDAY</span>
-        
-        <div class="cake-candle-area">
-            <div class="candle"><div class="flame"></div></div>
-            <div class="candle-text">2026</div>
-        </div>
+            <div class="content animate-item birthday-page" style="position:relative; z-index:2;">
+                <span class="birthday-title">HAPPY BIRTHDAY</span>
+                
+                <div class="cake-candle-area">
+                    <div class="candle"><div class="flame"></div></div>
+                    <div class="candle-text">2026</div>
+                </div>
 
-        <div class="story-text birthday-letter">
-            <p class="letter-salutation">致我最宝贝的老婆大人：</p>
-            <p>陪你走过的每一步，记下的每一件小事，都是我这辈子最珍视的宝藏。</p>
-            <p class="letter-highlight">“如果可以，我想陪宝宝度过余生所有的生日。”</p>
-            <p>未来的日子还很长，不管是长春的雪、北京的灯，还是深圳与上海的未来，我都会一直在你身边。</p>
-        </div>
+                <article class="story-text birthday-letter">
+                    <p class="letter-salutation">致我最宝贝的老婆大人：</p>
+                    <p>陪你走过的每一步，记下的每一件小事，都是我这辈子最珍视的宝藏。</p>
+                    <p class="letter-highlight">“如果可以，我想陪宝宝度过余生所有的生日。”</p>
+                    <p>未来的日子还很长，不管是长春的雪、北京的墙，还是深圳与上海的未来，我都想一直在你身边。</p>
+                </article>
 
-<div class="wish-action-area">
-            <button class="wish-btn" id="wishButton">
-                <span class="fingerprint-icon">❤️</span>
-                <p class="btn-tip">闭上眼睛许个愿，点这里解锁惊喜</p>
-            </button>
-        </div>
+                <div class="wish-action-area">
+                    <button type="button" class="wish-btn" id="wishButton">
+                        <span class="fingerprint-icon" aria-hidden="true">❤️</span>
+                        <p class="btn-tip">闭上眼睛许个愿，点这里打开我的小惊喜哦</p>
+                    </button>
+                </div>
 
-        <div class="final-confession hidden-confession" id="finalConfession">
-            <p class="love-you">我爱你</p>
-            <p class="queen">世界上最好的老婆大人</p>
-            <p class="hbd-wish">生 日 快 乐 🎂</p>
-        </div>
-</section>
+                <div class="final-confession hidden-confession" id="finalConfession">
+                    <p class="love-you">我爱你</p>
+                    <p class="queen">世界上最好的老婆大人</p>
+                    <p class="hbd-wish">生 日 快 乐 🎂</p>
+                </div>
+            </div>
+        </section>
 
-    </div>
+    </main>
 
     <script src="script.js"></script>
+
+    <script>
+        (function () {
+            const pages = Array.from(document.querySelectorAll('main.scroll-container > section.page'));
+            if (!pages.length) return;
+
+            const preloadedImagesSet = new Set();
+
+            function preloadImage(src) {
+                if (!src || preloadedImagesSet.has(src)) return;
+                preloadedImagesSet.add(src);
+
+                const imgCache = new Image();
+                imgCache.src = src;
+
+                if (typeof imgCache.decode === 'function') {
+                    imgCache.decode()
+                        .then(() => {
+                            console.log(`[Preload Success] 后台异步解码完成: ${src}`);
+                        })
+                        .catch((err) => {
+                            console.warn(`[Preload Failed] 图片解码受阻: ${src}`, err);
+                        });
+                }
+            }
+
+            function preloadPageImages(pageIndex) {
+                if (pageIndex < 0 || pageIndex >= pages.length) return;
+                const targetPage = pages[pageIndex];
+                const imgs = targetPage.querySelectorAll('img');
+                imgs.forEach(img => {
+                    const src = img.getAttribute('src');
+                    if (src) preloadImage(src);
+                });
+            }
+
+            if (pages.length > 2) {
+                window.addEventListener('load', () => {
+                    setTimeout(() => {
+                        preloadPageImages(2);
+                    }, 400);
+                });
+            }
+
+            const observerOptions = {
+                root: document.querySelector('.scroll-container') || null,
+                rootMargin: '0px',
+                threshold: 0.15
+            };
+
+            const pageObserver = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        const currentPage = entry.target;
+                        const currentIndex = pages.indexOf(currentPage);
+
+                        if (currentIndex !== -1) {
+                            const nextPageIndex = currentIndex + 1;
+                            const afterNextPageIndex = currentIndex + 2;
+
+                            requestAnimationFrame(() => {
+                                preloadPageImages(nextPageIndex);
+                                setTimeout(() => {
+                                    preloadPageImages(afterNextPageIndex);
+                                }, 150);
+                            });
+                        }
+                    }
+                });
+            }, observerOptions);
+
+            pages.forEach(page => pageObserver.observe(page));
+        })();
+    </script>
 </body>
 </html>
