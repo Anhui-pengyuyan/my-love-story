@@ -160,7 +160,7 @@ body {
     top: 0; left: 0; width: 100vw; height: 100vh; height: 100dvh;
     background: var(--bg-main); z-index: 10000;
     display: flex; justify-content: center; align-items: center;
-    transition: opacity var(--text-secondary) ease;
+    transition: opacity var(--transition-lazy) ease;
 }
 .password-box {
     text-align: center; width: 80%; max-width: 300px;
@@ -402,7 +402,7 @@ img {
     color: #fff;
     cursor: pointer;
     outline: none;
-    transition: all var(--text-secondary) ease;
+    transition: all var(--transition-lazy) ease;
     animation: buttonPulse 2s infinite ease-in-out;
 }
 .fingerprint-icon {
