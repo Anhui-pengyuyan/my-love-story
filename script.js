@@ -1,6 +1,7 @@
 /**
  * Anniversary Commemorative Website Core Engine
  * Architecture: Modular Framework with Centralized DOM & Event Management
+ * Optimization: Fully automated long-page layout adapter (Apple Storytelling Compliant)
  */
 
 // ==========================================
@@ -16,6 +17,10 @@ const CONFIG = {
     
     observerThreshold: 0.15,
     observerRootMargin: "0px 0px -10% 0px",
+    
+    // --- 长页面优化与位置校准核心参数 ---
+    longPageHeightBuffer: 20,       // 动态判定长页面的像素容错量 (px)
+    longPageScrollDuration: 350,     // 智能定位顶部的平滑滚动时间窗 (ms)
     
     particleBurstCount: 6,
     particleFadeDuration: 1400,
@@ -167,7 +172,8 @@ const ScrollModule = (() => {
 })();
 
 /**
- * Image Preloader Module (Prevents stalling on iOS Safari)
+ * Image Preloader & Dynamic Layout Detection Module 
+ * (Prevents stalling on iOS Safari & Automates long page adaptations)
  */
 const ImagePreloaderModule = (() => {
     const preloadedImagesSet = new Set();
@@ -197,11 +203,31 @@ const ImagePreloaderModule = (() => {
         });
     }
 
+    /**
+     * 【智能核心机制】动态长页面自动化计算引擎
+     * 自动遍历所有页面，实时识别真实高度突破 100vh 的卡片并挂载属性，完全无需手动硬编码 class
+     */
+    function autoDetectAndLayoutLongPages() {
+        const viewportHeight = window.innerHeight;
+        
+        DOM.pages.forEach(page => {
+            const contentNode = page.querySelector('.content') || page;
+            // 当页面内部文字或图片的自然渲染高度明显超过当前设备视口高度时
+            if (contentNode.scrollHeight > viewportHeight + CONFIG.longPageHeightBuffer) {
+                page.setAttribute('data-overflow', 'true'); // 激活特异性 CSS 布局管理
+            } else {
+                page.removeAttribute('data-overflow');
+            }
+        });
+    }
+
     function setupInitialLookAhead() {
         if (DOM.pages.length > 2) {
             window.addEventListener('load', () => {
                 setTimeout(() => {
                     preloadPageImages(2);
+                    // 页面及静态资源无损加载后，二次精准校验长页面高度，防止因图未开导致的高度误差
+                    autoDetectAndLayoutLongPages();
                 }, CONFIG.preloadInitialDelay);
             });
         }
@@ -209,13 +235,17 @@ const ImagePreloaderModule = (() => {
 
     function init() {
         setupInitialLookAhead();
+        // 挂载 resize 监听，完美兼容全面屏虚拟键盘弹出、横竖屏切换及微信头部 UI 缩放
+        window.addEventListener('resize', autoDetectAndLayoutLongPages);
+        // 初始化时立即执行首次快速判定分类
+        autoDetectAndLayoutLongPages();
     }
 
-    return { init, preloadPageImages };
+    return { init, preloadPageImages, autoDetectAndLayoutLongPages };
 })();
 
 /**
- * Intersection Observer Module (Triggers entry animations & look-ahead caching)
+ * Intersection Observer Module (Triggers entry animations, look-ahead caching & long-page top positioning)
  */
 const ObserverModule = (() => {
     const targetSelectors = [
@@ -225,6 +255,9 @@ const ObserverModule = (() => {
         '.bullet-list-text p', '.echo-box', '.final-sentence', '.cake-candle-area', 
         '.final-confession'
     ].join(', ');
+
+    // 独立控制互斥锁：用于防止自动归位滚动与原生 Scroll Snap 切页手势发生对冲而导致剧类抖动
+    let isAutoScrollingLock = false; 
 
     function triggerStaggeredAnimation(contentBlock) {
         if (contentBlock.classList.contains("visible")) return;
@@ -237,9 +270,31 @@ const ObserverModule = (() => {
         });
     }
 
+    /**
+     * 智能联动流式控制单元
+     * 完美整合长页面首帧置顶机制，以及后续图片的预加载缓存
+     */
     function handlePageIntersection(currentPage) {
         const currentIndex = DOM.pages.indexOf(currentPage);
         if (currentIndex === -1) return;
+
+        // 当检测到该切入视口的页面属于高度超长的页面时，强制其内部视口一键回顶呈现首句
+        if (currentPage.getAttribute('data-overflow') === 'true' && !isAutoScrollingLock) {
+            isAutoScrollingLock = true;
+            
+            // 采用毫秒级极速帧回调函数，贴合 120Hz 高刷新率，杜绝闪烁和白屏
+            requestAnimationFrame(() => {
+                currentPage.scrollTo({
+                    top: 0,
+                    behavior: 'smooth' // 硬件加速级的 Apple 式优雅回弹归位
+                });
+                
+                // 完成纠偏，并在 350ms 黄金滚动动画窗口结束后台释放独立互斥锁
+                setTimeout(() => {
+                    isAutoScrollingLock = false;
+                }, CONFIG.longPageScrollDuration);
+            });
+        }
 
         requestAnimationFrame(() => {
             ImagePreloaderModule.preloadPageImages(currentIndex + 1);
@@ -496,8 +551,8 @@ document.addEventListener("DOMContentLoaded", () => {
     PasswordModule.init();
     AudioModule.init();
     ScrollModule.init();
-    ImagePreloaderModule.init();
-    ObserverModule.init();
+    ImagePreloaderModule.init(); // 包含动态长页面识别计算核心
+    ObserverModule.init();       // 包含动态高刷位置校正与手势解耦核心
     ParticleModule.init();
     FireworkModule.init();
     WishModule.init();
