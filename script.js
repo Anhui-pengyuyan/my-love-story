@@ -1,288 +1,504 @@
-document.addEventListener("DOMContentLoaded", () => {
-    const container = document.querySelector(".scroll-container");
-    const pages = document.querySelectorAll(".page");
-    const musicBtn = document.getElementById("musicBtn");
-    const audio = document.getElementById("bgMusic");
-    const westie = document.getElementById("westieDog");
-    const bubble = document.getElementById("bubble");
+/**
+ * Anniversary Commemorative Website Core Engine
+ * Architecture: Modular Framework with Centralized DOM & Event Management
+ */
+
+// ==========================================
+// 1. GLOBAL CONFIGURATION (Magic Numbers)
+// ==========================================
+const CONFIG = {
+    password: "0719",
+    passwordFadeOutDuration: 500,
+    bubbleHideDelay: 2500,
     
-    // 密码层验证
-    const overlay = document.getElementById("passwordOverlay");
-    const pwdInput = document.getElementById("pwdInput");
-    const pwdBtn = document.getElementById("pwdBtn");
+    preloadInitialDelay: 400,
+    preloadSubsequentDelay: 150,
+    
+    observerThreshold: 0.15,
+    observerRootMargin: "0px 0px -10% 0px",
+    
+    particleBurstCount: 6,
+    particleFadeDuration: 1400,
+    particleVelocityBase: 40,
+    particleVelocityRandom: 60,
+    particleYDrift: -30,
+    particleFontSizeBase: 12,
+    particleFontSizeRandom: 14,
+    particlePool: ["❤️", "🌸", "✨"],
+    
+    fireworkColors: ['#ffffff', '#ffb6c1', '#dda0dd', '#ffd700', '#ff4d4d', '#ff69b4'],
+    fireworkCoreColorCount: 15,
+    fireworkBurstParticleCount: 85,
+    fireworkFriction: 0.96,
+    fireworkGravity: 0.11,
+    fireworkMinDecay: 0.006,
+    fireworkDecayRange: 0.008,
+    fireworkBaseSpeed: 3.5,
+    fireworkSpeedRange: 4,
+    fireworkMaxRadius: 2.5,
+    fireworkMinRadius: 1,
+    fireworkShadowBlur: 10,
+    fireworkTrailOpacity: 0.12,
+    
+    wishConfessionDelay: 600,
+    wishSequenceDuration: 12000,
+    wishLoopInterval: 1200,
+    wishLoopMaxCount: 5
+};
 
-    if (pwdBtn) pwdBtn.addEventListener("click", checkPassword);
-    if (pwdInput) {
-        pwdInput.addEventListener("keypress", (e) => { if(e.key === "Enter") checkPassword(); });
-    }
+// ==========================================
+// 2. CENTRALIZED DOM SELECTORS
+// ==========================================
+const DOM = {
+    container: document.querySelector(".scroll-container"),
+    pages: Array.from(document.querySelectorAll(".page")),
+    musicBtn: document.getElementById("musicBtn"),
+    audio: document.getElementById("bgMusic"),
+    westie: document.getElementById("westieDog"),
+    bubble: document.getElementById("bubble"),
+    
+    overlay: document.getElementById("passwordOverlay"),
+    pwdInput: document.getElementById("pwdInput"),
+    pwdBtn: document.getElementById("pwdBtn"),
+    
+    wishButton: document.getElementById('wishButton'),
+    finalConfession: document.getElementById('finalConfession'),
+    canvas: document.getElementById('fireworksCanvas')
+};
 
+// ==========================================
+// 3. APPLICATION MODULES
+// ==========================================
+
+/**
+ * Password Verification Module
+ */
+const PasswordModule = (() => {
     function checkPassword() {
-        if (pwdInput.value === "0719") {
-            overlay.style.opacity = "0";
-            setTimeout(() => overlay.remove(), 500);
-            // 尝试自动播放音乐
-            audio.play().catch(() => {});
+        if (!DOM.pwdInput || !DOM.overlay) return;
+
+        if (DOM.pwdInput.value === CONFIG.password) {
+            DOM.overlay.style.opacity = "0";
+            setTimeout(() => DOM.overlay.remove(), CONFIG.passwordFadeOutDuration);
+            AudioModule.playAudioSilently();
         } else {
             alert("密码错误，这是专属空间哦~");
-            pwdInput.value = "";
+            DOM.pwdInput.value = "";
         }
     }
 
-    // 页面滚动导航
-    window.scrollToNext = function() {
-        if (pages[1]) {
-            pages[1].scrollIntoView({ behavior: "smooth" });
+    function handleKeyPress(e) {
+        if (e.key === "Enter") {
+            checkPassword();
         }
-    };
+    }
 
-    // 极其平滑的动态淡入核心：逐行有序浮现
-    const observerOptions = {
-        root: null,
-        threshold: 0.2, // 哪怕长页面只露出一部分，也能提前准备好动画
-        rootMargin: "0px 0px -10% 0px"
-    };
+    function init() {
+        if (DOM.pwdBtn) DOM.pwdBtn.addEventListener("click", checkPassword);
+        if (DOM.pwdInput) DOM.pwdInput.addEventListener("keypress", handleKeyPress);
+    }
 
-    const observer = new IntersectionObserver((entries) => {
-        entries.forEach(entry => {
-            if (entry.isIntersecting) {
-                const content = entry.target.querySelector(".content");
-                if (content && !content.classList.contains("visible")) {
-                    content.classList.add("visible");
-                    
-                    // 内部元素流式延迟出场
-                    const children = content.querySelectorAll('.chapter, .date, .subtitle, .main-title, .quote, .story-text p, .chat-img-wrapper, .dual-photo-container, .triple-photo-container, .jiugongge-container, .quad-photo-container, .mosaic-grid-container, .bullet-list-text p, .echo-box, .final-sentence, .cake-candle-area, .final-confession');
-                    children.forEach((child, index) => {
-                        child.style.setProperty('--delay-index', index);
-                        child.classList.add('fade-in-up');
-                    });
+    return { init };
+})();
+
+/**
+ * Audio Control Module
+ */
+const AudioModule = (() => {
+    let manuallyPaused = false;
+
+    function playAudioSilently() {
+        if (DOM.audio) {
+            DOM.audio.play().catch(() => {});
+        }
+    }
+
+    function toggleMusic() {
+        if (!DOM.audio || !DOM.musicBtn) return;
+
+        if (DOM.audio.paused) {
+            manuallyPaused = false;
+            DOM.audio.play().catch(() => {});
+            DOM.musicBtn.innerText = "🎵";
+            DOM.musicBtn.classList.remove("paused");
+        } else {
+            DOM.audio.pause();
+            manuallyPaused = true;
+            DOM.musicBtn.innerText = "🔇";
+            DOM.musicBtn.classList.add("paused");
+        }
+    }
+
+    function handleTouchStart() {
+        const isOverlayRemoved = !DOM.overlay || DOM.overlay.parentNode === null;
+        if (DOM.audio && DOM.audio.paused && !manuallyPaused && isOverlayRemoved) {
+            DOM.audio.play().catch(() => {});
+        }
+    }
+
+    function init() {
+        if (DOM.musicBtn) {
+            DOM.musicBtn.addEventListener("click", (e) => {
+                e.stopPropagation();
+                toggleMusic();
+            });
+        }
+        document.addEventListener("touchstart", handleTouchStart, { once: true });
+    }
+
+    return { init, playAudioSilently };
+})();
+
+/**
+ * Page Scroll Navigation Module
+ */
+const ScrollModule = (() => {
+    function scrollToNext() {
+        if (DOM.pages[1]) {
+            DOM.pages[1].scrollIntoView({ behavior: "smooth" });
+        }
+    }
+
+    function init() {
+        window.scrollToNext = scrollToNext;
+    }
+
+    return { init };
+})();
+
+/**
+ * Image Preloader Module (Prevents stalling on iOS Safari)
+ */
+const ImagePreloaderModule = (() => {
+    const preloadedImagesSet = new Set();
+
+    function preloadImage(src) {
+        if (!src || preloadedImagesSet.has(src)) return;
+        preloadedImagesSet.add(src);
+
+        const imgCache = new Image();
+        imgCache.src = src;
+
+        if (typeof imgCache.decode === 'function') {
+            imgCache.decode().catch((err) => {
+                console.warn(`[Preload Info] Background decoding interrupted: ${src}`, err);
+            });
+        }
+    }
+
+    function preloadPageImages(pageIndex) {
+        if (pageIndex < 0 || pageIndex >= DOM.pages.length) return;
+        
+        const targetPage = DOM.pages[pageIndex];
+        const imgs = targetPage.querySelectorAll('img');
+        imgs.forEach(img => {
+            const src = img.getAttribute('src');
+            if (src) preloadImage(src);
+        });
+    }
+
+    function setupInitialLookAhead() {
+        if (DOM.pages.length > 2) {
+            window.addEventListener('load', () => {
+                setTimeout(() => {
+                    preloadPageImages(2);
+                }, CONFIG.preloadInitialDelay);
+            });
+        }
+    }
+
+    function init() {
+        setupInitialLookAhead();
+    }
+
+    return { init, preloadPageImages };
+})();
+
+/**
+ * Intersection Observer Module (Triggers entry animations & look-ahead caching)
+ */
+const ObserverModule = (() => {
+    const targetSelectors = [
+        '.chapter', '.date', '.subtitle', '.main-title', '.quote', '.story-text p', 
+        '.chat-img-wrapper', '.dual-photo-container', '.triple-photo-container', 
+        '.jiugongge-container', '.quad-photo-container', '.mosaic-grid-container', 
+        '.bullet-list-text p', '.echo-box', '.final-sentence', '.cake-candle-area', 
+        '.final-confession'
+    ].join(', ');
+
+    function triggerStaggeredAnimation(contentBlock) {
+        if (contentBlock.classList.contains("visible")) return;
+        contentBlock.classList.add("visible");
+        
+        const children = contentBlock.querySelectorAll(targetSelectors);
+        children.forEach((child, index) => {
+            child.style.setProperty('--delay-index', index);
+            child.classList.add('fade-in-up');
+        });
+    }
+
+    function handlePageIntersection(currentPage) {
+        const currentIndex = DOM.pages.indexOf(currentPage);
+        if (currentIndex === -1) return;
+
+        requestAnimationFrame(() => {
+            ImagePreloaderModule.preloadPageImages(currentIndex + 1);
+            setTimeout(() => {
+                ImagePreloaderModule.preloadPageImages(currentIndex + 2);
+            }, CONFIG.preloadSubsequentDelay);
+        });
+    }
+
+    function init() {
+        const observerOptions = {
+            root: null,
+            threshold: CONFIG.observerThreshold,
+            rootMargin: CONFIG.observerRootMargin
+        };
+
+        const observer = new IntersectionObserver((entries) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    const currentPage = entry.target;
+                    handlePageIntersection(currentPage);
+
+                    const content = currentPage.querySelector(".content");
+                    if (content) triggerStaggeredAnimation(content);
                 }
-            }
-        });
-    }, observerOptions);
+            });
+        }, observerOptions);
 
-    pages.forEach(page => observer.observe(page));
-
-    // 西高地小狗彩蛋
-    if (westie) {
-        westie.addEventListener("click", (e) => {
-            e.stopPropagation();
-            bubble.classList.add("show");
-            setTimeout(() => bubble.classList.remove("show"), 2500);
-        });
+        DOM.pages.forEach(page => observer.observe(page));
     }
 
-    // ==========================================
-    // 升级版：全屏浪漫粒子爆裂喷泉特效
-    // ==========================================
-    document.addEventListener("click", (e) => {
-        // 过滤掉音乐按钮和密码框
+    return { init };
+})();
+
+/**
+ * Click Particle Burst Module
+ */
+const ParticleModule = (() => {
+    function createParticleElement(clientX, clientY) {
+        const particle = document.createElement("div");
+        particle.className = "romantic-particle";
+        particle.innerHTML = CONFIG.particlePool[Math.floor(Math.random() * CONFIG.particlePool.length)];
+        
+        particle.style.left = clientX + "px";
+        particle.style.top = clientY + "px";
+        particle.style.fontSize = CONFIG.particleFontSizeBase + Math.random() * CONFIG.particleFontSizeRandom + "px";
+        
+        return particle;
+    }
+
+    function applyParticleTrajectory(particle) {
+        const angle = Math.random() * Math.PI * 2;
+        const velocity = CONFIG.particleVelocityBase + Math.random() * CONFIG.particleVelocityRandom;
+        const x = Math.cos(angle) * velocity;
+        const y = Math.sin(angle) * velocity + CONFIG.particleYDrift;
+        
+        particle.style.setProperty('--x', `${x}px`);
+        particle.style.setProperty('--y', `${y}px`);
+        particle.style.setProperty('--rot', `${Math.random() * 360}deg`);
+    }
+
+    function spawnBurst(e) {
         if (e.target.closest("#musicBtn") || e.target.closest(".password-box")) return;
 
-        // 每次点击，一口气爆发出 6 颗不同方向、不同大小的微光爱心/樱花
-        const particles = ["❤️", "🌸", "✨"];
-        
-        for (let i = 0; i < 6; i++) {
-            const particle = document.createElement("div");
-            particle.className = "romantic-particle";
-            
-            // 随机选择样式
-            particle.innerHTML = particles[Math.floor(Math.random() * particles.length)];
-            
-            // 初始核心位置
-            particle.style.left = e.clientX + "px";
-            particle.style.top = e.clientY + "px";
-            
-            // 利用 CSS 变量随机分发每颗粒子的飞散方向和距离
-            const angle = Math.random() * Math.PI * 2;
-            const velocity = 40 + Math.random() * 60; // 爆炸开的速度
-            const x = Math.cos(angle) * velocity;
-            const y = Math.sin(angle) * velocity - 30; // 顺便带有一点往上漂的感觉
-            
-            particle.style.setProperty('--x', `${x}px`);
-            particle.style.setProperty('--y', `${y}px`);
-            particle.style.setProperty('--rot', `${Math.random() * 360}deg`);
-            particle.style.fontSize = 12 + Math.random() * 14 + "px"; // 错落有致的大小
-
+        for (let i = 0; i < CONFIG.particleBurstCount; i++) {
+            const particle = createParticleElement(e.clientX, e.clientY);
+            applyParticleTrajectory(particle);
             document.body.appendChild(particle);
             
-            // 动画播完自动销毁，极省内存
-            setTimeout(() => particle.remove(), 1400);
-        }
-    });
-
-    // 音乐播放控制
-    let manuallyPaused = false;
-    function toggleMusic() {
-        if (audio.paused) {
-            manuallyPaused = false;
-            audio.play().catch(() => {});
-            musicBtn.innerText = "🎵";
-            musicBtn.classList.remove("paused");
-        } else {
-            audio.pause();
-            manuallyPaused = true;
-            musicBtn.innerText = "🔇";
-            musicBtn.classList.add("paused");
+            setTimeout(() => particle.remove(), CONFIG.particleFadeDuration);
         }
     }
 
-    if (musicBtn) {
-        musicBtn.addEventListener("click", (e) => {
-            e.stopPropagation();
-            toggleMusic();
+    function triggerWestieEasterEgg(e) {
+        if (!DOM.bubble) return;
+        e.stopPropagation();
+        DOM.bubble.classList.add("show");
+        setTimeout(() => DOM.bubble.classList.remove("show"), CONFIG.bubbleHideDelay);
+    }
+
+    function init() {
+        document.addEventListener("click", spawnBurst);
+        if (DOM.westie) {
+            DOM.westie.addEventListener("click", triggerWestieEasterEgg);
+        }
+    }
+
+    return { init };
+})();
+
+/**
+ * Fireworks Mechanics Engine (Canvas Operations)
+ */
+const FireworkModule = (() => {
+    let ctx = null;
+    let particles = [];
+    let animationId = null;
+
+    class FireworkParticle {
+        constructor(x, y, color) {
+            this.x = x;
+            this.y = y;
+            this.color = color;
+            
+            const angle = Math.random() * Math.PI * 2;
+            const speed = Math.random() * CONFIG.fireworkSpeedRange + CONFIG.fireworkBaseSpeed;
+            
+            this.vx = Math.cos(angle) * speed;
+            this.vy = Math.sin(angle) * speed;
+            this.alpha = 1;
+            this.decay = Math.random() * CONFIG.fireworkDecayRange + CONFIG.fireworkMinDecay;
+            this.friction = CONFIG.fireworkFriction;
+            this.gravity = CONFIG.fireworkGravity;
+            this.radius = Math.random() * CONFIG.fireworkMaxRadius + CONFIG.fireworkMinRadius;
+        }
+
+        draw() {
+            ctx.save();
+            ctx.globalAlpha = this.alpha;
+            ctx.beginPath();
+            ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
+            ctx.fillStyle = this.color;
+            ctx.shadowBlur = CONFIG.fireworkShadowBlur;
+            ctx.shadowColor = this.color;
+            ctx.fill();
+            ctx.restore();
+        }
+
+        update() {
+            this.vx *= this.friction;
+            this.vy *= this.friction;
+            this.vy += this.gravity;
+            this.x += this.vx;
+            this.y += this.vy;
+            this.alpha -= this.decay;
+        }
+    }
+
+    function resizeCanvas() {
+        if (!DOM.canvas) return;
+        const dpr = window.devicePixelRatio || 1;
+        DOM.canvas.width = DOM.canvas.parentElement.offsetWidth * dpr;
+        DOM.canvas.height = DOM.canvas.parentElement.offsetHeight * dpr;
+        ctx.scale(dpr, dpr);
+    }
+
+    function getCanvasDimensions() {
+        const dpr = window.devicePixelRatio || 1;
+        return {
+            w: DOM.canvas.width / dpr,
+            h: DOM.canvas.height / dpr
+        };
+    }
+
+    function spawnFirework(x, y) {
+        for (let i = 0; i < CONFIG.fireworkBurstParticleCount; i++) {
+            const color = i < CONFIG.fireworkCoreColorCount 
+                ? '#ffffff' 
+                : CONFIG.fireworkColors[Math.floor(Math.random() * CONFIG.fireworkColors.length)];
+            particles.push(new FireworkParticle(x, y, color));
+        }
+    }
+
+    function renderLoop() {
+        const dim = getCanvasDimensions();
+        ctx.fillStyle = `rgba(0, 0, 0, ${CONFIG.fireworkTrailOpacity})`;
+        ctx.fillRect(0, 0, dim.w, dim.h);
+
+        particles = particles.filter(p => p.alpha > 0);
+        particles.forEach(p => {
+            p.update();
+            p.draw();
         });
+
+        animationId = requestAnimationFrame(renderLoop);
     }
 
-    // 适配移动端首次触摸屏幕触发音频
-    document.addEventListener("touchstart", () => {
-        if (audio && audio.paused && !manuallyPaused && (!overlay || overlay.parentNode === null)) {
-            audio.play().catch(() => {});
-        }
-    }, { once: true });
+    function stopEngine() {
+        cancelAnimationFrame(animationId);
+        const dim = getCanvasDimensions();
+        ctx.clearRect(0, 0, dim.w, dim.h);
+        particles = [];
+    }
 
-    // ==========================================
-    // 终极彩蛋：高端流星垂柳烟花引擎（16 Pro Max 专属丝滑版）
-    // ==========================================
-    const wishButton = document.getElementById('wishButton');
-    const finalConfession = document.getElementById('finalConfession');
-    const canvas = document.getElementById('fireworksCanvas');
-
-    if (wishButton && canvas) {
-        const ctx = canvas.getContext('2d');
-        let fireworkParticles = [];
-        let fireworksAnimationId = null;
-        let fireworkLoopTimer = null;
-
-        // 自适应高刷屏分辨率，保持超清抗锯齿
-        function resizeCanvas() {
-            const dpr = window.devicePixelRatio || 1;
-            canvas.width = canvas.parentElement.offsetWidth * dpr;
-            canvas.height = canvas.parentElement.offsetHeight * dpr;
-            ctx.scale(dpr, dpr);
-        }
+    function init() {
+        if (!DOM.canvas) return;
+        ctx = DOM.canvas.getContext('2d');
         resizeCanvas();
         window.addEventListener('resize', resizeCanvas);
-
-        // 高级流星垂柳粒子类定义
-        class LuxuryParticle {
-            constructor(x, y, color) {
-                this.x = x;
-                this.y = y;
-                this.color = color;
-                
-                // 圆周辐射速度
-                const angle = Math.random() * Math.PI * 2;
-                const speed = Math.random() * 4 + 3.5; // 扩大爆炸初始张力
-                
-                this.vx = Math.cos(angle) * speed;
-                this.vy = Math.sin(angle) * speed;
-                
-                this.alpha = 1;
-                this.decay = Math.random() * 0.008 + 0.006; // 完美延长生命周期，让绽放变长
-                this.friction = 0.96; // 空气阻力（产生从快到慢的拟真感）
-                this.gravity = 0.11;  // 注入灵魂的垂柳下坠重力
-                
-                this.radius = Math.random() * 2.5 + 1;
-            }
-
-            draw() {
-                ctx.save();
-                ctx.globalAlpha = this.alpha;
-                ctx.beginPath();
-                ctx.arc(this.x, this.y, this.radius, 0, Math.PI * 2);
-                ctx.fillStyle = this.color;
-                
-                // 原生 Canvas 霓虹微发光滤镜
-                ctx.shadowBlur = 10;
-                ctx.shadowColor = this.color;
-                
-                ctx.fill();
-                ctx.restore();
-            }
-
-            update() {
-                this.vx *= this.friction;
-                this.vy *= this.friction;
-                this.vy += this.gravity; 
-                this.x += this.vx;
-                this.y += this.vy;
-                this.alpha -= this.decay;
-            }
-        }
-
-        // 释放一发绚丽莫兰迪烟花
-        function launchLuxuryFirework(x, y) {
-            // 选用极具高级感的专属浪漫配色：白金、玫瑰粉、极光紫、香槟金、心动红
-            const luxuryColors = ['#ffffff', '#ffb6c1', '#dda0dd', '#ffd700', '#ff4d4d', '#ff69b4'];
-            const count = 85; // 密度翻倍，视觉更加立体丰满
-
-            for (let i = 0; i < count; i++) {
-                // 核心前 15 颗粒子强制为白金光芒，模拟现实火药炸开瞬间的核心极亮
-                const color = i < 15 ? '#ffffff' : luxuryColors[Math.floor(Math.random() * luxuryColors.length)];
-                fireworkParticles.push(new LuxuryParticle(x, y, color));
-            }
-        }
-
-        // 核心渲染循环（流星拖尾残影的核心）
-        function renderFireworks() {
-            // 通过覆盖半透明黑色层，让上一帧的粒子轨迹化为梦幻拖尾
-            ctx.fillStyle = 'rgba(0, 0, 0, 0.12)';
-            ctx.fillRect(0, 0, canvas.width / (window.devicePixelRatio || 1), canvas.height / (window.devicePixelRatio || 1));
-
-            fireworkParticles = fireworkParticles.filter(p => p.alpha > 0);
-            fireworkParticles.forEach(p => {
-                p.update();
-                p.draw();
-            });
-
-            fireworksAnimationId = requestAnimationFrame(renderFireworks);
-        }
-
-        // 点击许愿按钮触发终极浪漫
-        wishButton.addEventListener('click', () => {
-            wishButton.classList.add('activated');
-            
-            // 1. 让锁定的终极表白和烟花交织在一起缓缓浮现
-            setTimeout(() => {
-                if (finalConfession) {
-                    finalConfession.classList.remove('hidden-confession');
-                    finalConfession.classList.add('show-confession');
-                }
-            }, 600);
-
-            // 2. 启动 Canvas 主引擎
-            renderFireworks();
-
-            const w = canvas.width / (window.devicePixelRatio || 1);
-            const h = canvas.height / (window.devicePixelRatio || 1);
-
-            // 3. 【连环花火交力秀】开始运转
-            // 第一波：屏幕正中央主花火盛大绽放
-            launchLuxuryFirework(w / 2, h / 2 - 20);
-
-            // 第二波：左上角、右上角高空错落接力绽放
-            setTimeout(() => launchLuxuryFirework(w * 0.25, h * 0.35), 400);
-            setTimeout(() => launchLuxuryFirework(w * 0.75, h * 0.4), 800);
-
-            // 第三波：夜空随机接力大秀，持续 8 秒，每 1.2 秒自动诞生一发浪漫
-            let loopCount = 0;
-            fireworkLoopTimer = setInterval(() => {
-                if (loopCount > 5) {
-                    clearInterval(fireworkLoopTimer);
-                    return;
-                }
-                const randomX = w * 0.2 + Math.random() * (w * 0.6);
-                const randomY = h * 0.22 + Math.random() * (h * 0.28);
-                launchLuxuryFirework(randomX, randomY);
-                loopCount++;
-            }, 1200);
-            
-            // 12 秒后花火完全熄灭平稳静止，不吃后台内存与电量
-            setTimeout(() => {
-                cancelAnimationFrame(fireworksAnimationId);
-                clearInterval(fireworkLoopTimer);
-                ctx.clearRect(0, 0, canvas.width, canvas.height);
-            }, 12000);
-        });
     }
+
+    return { init, spawnFirework, renderLoop, stopEngine, getCanvasDimensions };
+})();
+
+/**
+ * Birthday Wish Trigger Module
+ */
+const WishModule = (() => {
+    let sequenceTimer = null;
+
+    function runShow() {
+        if (!DOM.wishButton) return;
+        DOM.wishButton.classList.add('activated');
+        
+        setTimeout(() => {
+            if (DOM.finalConfession) {
+                DOM.finalConfession.classList.remove('hidden-confession');
+                DOM.finalConfession.classList.add('show-confession');
+            }
+        }, CONFIG.wishConfessionDelay);
+
+        FireworkModule.renderLoop();
+
+        const dim = FireworkModule.getCanvasDimensions();
+        
+        // Initial bursts
+        FireworkModule.spawnFirework(dim.w / 2, dim.h / 2 - 20);
+        setTimeout(() => FireworkModule.spawnFirework(dim.w * 0.25, dim.h * 0.35), 400);
+        setTimeout(() => FireworkModule.spawnFirework(dim.w * 0.75, dim.h * 0.4), 800);
+
+        // Staggered loop
+        let loopCount = 0;
+        sequenceTimer = setInterval(() => {
+            if (loopCount > CONFIG.wishLoopMaxCount) {
+                clearInterval(sequenceTimer);
+                return;
+            }
+            const randomX = dim.w * 0.2 + Math.random() * (dim.w * 0.6);
+            const randomY = dim.h * 0.22 + Math.random() * (dim.h * 0.28);
+            FireworkModule.spawnFirework(randomX, randomY);
+            loopCount++;
+        }, CONFIG.wishLoopInterval);
+        
+        // System teardown to save memory & battery
+        setTimeout(() => {
+            clearInterval(sequenceTimer);
+            FireworkModule.stopEngine();
+        }, CONFIG.wishSequenceDuration);
+    }
+
+    function init() {
+        if (DOM.wishButton) {
+            DOM.wishButton.addEventListener('click', runShow);
+        }
+    }
+
+    return { init };
+})();
+
+// ==========================================
+// 4. MAIN INITIALIZATION
+// ==========================================
+document.addEventListener("DOMContentLoaded", () => {
+    PasswordModule.init();
+    AudioModule.init();
+    ScrollModule.init();
+    ImagePreloaderModule.init();
+    ObserverModule.init();
+    ParticleModule.init();
+    FireworkModule.init();
+    WishModule.init();
 });
