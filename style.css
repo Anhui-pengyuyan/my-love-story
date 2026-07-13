@@ -305,13 +305,19 @@ img {
     border: 1px solid rgba(255, 255, 255, 0.05); 
 }
 
-/* 🎞️ 最终章 12格高级电影马赛克瀑布墙 */
+/* 🎞️ 最终章 12格高级电影马赛克墙（取消跨列，完美填满 4 行） */
 .mosaic-grid-container { 
-    grid-template-columns: repeat(3, 1fr); /* 手机端用3列最为稳妥舒适 */
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); 
+    gap: 6px;
     width: 90%; 
+    margin: var(--space-md) auto;
 }
 .mosaic-grid-container img,
 .mosaic-grid-container .mosaic-item { 
+    width: 100%;
+    aspect-ratio: 1 / 1;
+    object-fit: cover;
     border-radius: var(--radius-small); 
     filter: grayscale(12%); 
     transition: filter var(--transition-normal), transform var(--transition-fast); 
@@ -320,14 +326,7 @@ img {
     filter: grayscale(0%); 
     transform: scale(0.96);
 }
-/* 给第1张和第7张赋予横跨两列的电影视觉感，打破单调 */
-.mosaic-grid-container img:nth-child(1),
-.mosaic-grid-container img:nth-child(7) {
-    grid-column: span 2;
-    aspect-ratio: 2 / 1; 
-}
-
-.bullet-list-text p { font-size: 12px !important; color: var(--text-hint-alt) !important; margin: var(--space-xs) 0 !important; text-align: center !important; }
+/* 删除了原本对 nth-child(1) 和 nth-child(7) 的 span 2 限制，使其自然对齐 */
 
 /* ==========================================
    7. 电影独白后记排版
