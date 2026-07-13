@@ -305,7 +305,7 @@ img {
     border: 1px solid rgba(255, 255, 255, 0.05); 
 }
 
-/* 🎞️ 最终章 12格高级电影马赛克墙（取消跨列，完美填满 4 行） */
+/* 🎞️ 最终章 12格高级电影马赛克墙（取消跨列完美填满 4 行） */
 .mosaic-grid-container { 
     display: grid;
     grid-template-columns: repeat(3, 1fr); 
