@@ -190,7 +190,7 @@ body {
 .story-text .highlight { color: var(--text-primary); font-weight: 600; display: block; margin-top: 15px; }
 
 /* ==========================================
-   6. 📸 重构：极致优雅的自适应图片排版系统（防拉伸变形）
+   6. 📸 重构：极致优雅的自适应图片排版系统（防拉伸变形与溢出）
    ========================================== */
 /* 通用图片基础防御防变形 */
 img {
@@ -208,6 +208,8 @@ img {
 .jiugongge-container,
 .mosaic-grid-container {
     margin: var(--space-md) auto;
+    max-width: 100%; /* 全局防御：任何图片容器都不允许超过父级 .content */
+    box-sizing: border-box;
 }
 
 .dual-photo-container,
@@ -223,8 +225,7 @@ img {
     gap: 6px;
 }
 
-.dual-photo-container img,
-.dual-photo-container .mini-photo-wrapper,
+/* 公共网格正方形比例约束 */
 .quad-photo-container img,
 .quad-photo-container .quad-photo-item,
 .jiugongge-container img,
@@ -251,14 +252,17 @@ img {
     object-fit: contain; /* 聊天截图保持完整不裁剪 */
 }
 
-/* 👥 双图并排 (第4章、11.5章、13章) */
+/* 👥 重构核心：双图并排防溢出 (第4章、11.5章、13章) */
 .dual-photo-container { 
     gap: 12px; 
     width: 85%; 
 }
 .dual-photo-container img,
 .dual-photo-container .mini-photo-wrapper { 
-    flex: 1; 
+    width: calc(50% - 6px); /* 🚀 锁死50%宽度，完美扣除一半间距 */
+    min-width: 0; /* 🚀 解除 flex 项的内容最小宽度暗坑，防止大图硬撑 */
+    aspect-ratio: 1 / 1;
+    object-fit: cover;
     border-radius: var(--radius-xl); 
     border: var(--border-card); 
 }
@@ -269,13 +273,14 @@ img {
     width: 90%; 
 }
 .triple-photo-container .micro-photo-wrapper { 
-    flex: 1; 
+    width: calc(33.333% - 5.33px); /* 🚀 三图精准对半分流 */
+    min-width: 0;
     margin: 0;
     text-align: center; 
 }
 .triple-photo-container .micro-photo-wrapper img { 
     width: 100%; 
-    aspect-ratio: 3 / 4; /* 强制3:4纵向比例，最适合聊天记录排版 */
+    aspect-ratio: 3 / 4; /* 强制3:4纵向比例 */
     object-fit: cover; 
     border-radius: var(--radius-medium); 
     border: 1.5px solid #1c1c1e; 
@@ -305,19 +310,14 @@ img {
     border: 1px solid rgba(255, 255, 255, 0.05); 
 }
 
-/* 🎞️ 最终章 12格高级电影马赛克墙（取消跨列完美填满 4 行） */
+/* 🎞️ 最终章 12格高级电影马赛克墙 */
 .mosaic-grid-container { 
-    display: grid;
     grid-template-columns: repeat(3, 1fr); 
     gap: 6px;
     width: 90%; 
-    margin: var(--space-md) auto;
 }
 .mosaic-grid-container img,
 .mosaic-grid-container .mosaic-item { 
-    width: 100%;
-    aspect-ratio: 1 / 1;
-    object-fit: cover;
     border-radius: var(--radius-small); 
     filter: grayscale(12%); 
     transition: filter var(--transition-normal), transform var(--transition-fast); 
@@ -326,7 +326,6 @@ img {
     filter: grayscale(0%); 
     transform: scale(0.96);
 }
-/* 删除了原本对 nth-child(1) 和 nth-child(7) 的 span 2 限制，使其自然对齐 */
 
 /* ==========================================
    7. 电影独白后记排版
@@ -418,7 +417,7 @@ img {
 .wish-btn.activated {
     transform: scale(0.8);
     opacity: 0;
-    pointer-events: none; /* 点完就永久消失，把舞台让给表白文字 */
+    pointer-events: none; /* 点完就永久消失 */
 }
 @keyframes buttonPulse {
     0%, 100% { box-shadow: 0 0 0 0 rgba(255, 59, 48, 0.2); }
@@ -428,17 +427,17 @@ img {
 /* 终极告白的高级黑色画幅淡入 */
 .final-confession.hidden-confession {
     opacity: 0;
-    filter: blur(10px); /* 朦胧模糊感 */
-    transform: translateY(30px); /* 往下沉 30 像素 */
+    filter: blur(10px);
+    transform: translateY(30px);
     pointer-events: none;
-    transition: all var(--transition-cinema) cubic-bezier(0.215, 0.610, 0.355, 1); /* 优雅的 2.5 秒慢速浮现 */
+    transition: all var(--transition-cinema) cubic-bezier(0.215, 0.610, 0.355, 1);
 }
 .final-confession.show-confession {
     opacity: 1;
     filter: blur(0px);
     transform: translateY(0);
     pointer-events: auto;
-    text-shadow: 0 0 12px rgba(255, 255, 255, 0.4); /* 微微带有一层浪漫的白光 */
+    text-shadow: 0 0 12px rgba(255, 255, 255, 0.4);
 }
 
 /* ==========================================
